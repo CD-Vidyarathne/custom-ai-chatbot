@@ -1,6 +1,6 @@
 {
-  "name": "custom-ai-chatbot-monorepo",
-  "version": "1.0.0",
+  "name": "custom-ai-chatbot",
+  "version": "0.0.1",
   "private": true,
   "description": "A full-stack AI chatbot application with admin dashboard, embeddable chat UI, and Node.js API",
   "author": {
