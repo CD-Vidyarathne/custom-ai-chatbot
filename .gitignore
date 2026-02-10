@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+**/node_modules/
+.pnpm-store/
+
+# Environment variables
+.env
+.env.local
+.env*.local
+**/.env
+**/.env.local
+
+# Build outputs
+dist/
+build/
+out/
+**/dist/
+**/build/
+**/out/
+**/.dev/
+
+# Logs
+*.log
+logs/
+**/*.log
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDEs
+.vscode/
+.idea/
+*.code-workspace
+
+# Electron specific
+admin-dashboard/release/
+admin-dashboard/node_modules/.dev/
+
+# Next.js
+chat-bubble/.next/
+
+# Testing
+coverage/
+**/.nyc_output/
+
+# Temporary files
+*.tmp
+.cache/

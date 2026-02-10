@@ -1,0 +1,5 @@
+packages:
+  - 'admin-dashboard'
+  - 'api-server'
+  - 'chat-bubble'
+  - 'packages/*'
