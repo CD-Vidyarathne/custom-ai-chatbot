@@ -14,7 +14,12 @@ interface Contact {
 }
 
 const sampleData: Contact[] = [
-    // { date: "2026-02-12 10:00", name: "John Doe", email: "john@example.com", phone: "+123456789" },
+    {
+        date: '2026-02-12 10:00',
+        name: 'John Doe',
+        email: 'john@example.com',
+        phone: '+123456789',
+    },
 ];
 
 export function ContactsScreen() {
