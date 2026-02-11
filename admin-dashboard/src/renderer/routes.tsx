@@ -1,9 +1,10 @@
 import { Route, Navigate } from 'react-router-dom';
-
 import { Router } from 'lib/electron-router-dom';
-
 import { AppLayout } from './layout';
 import { DashboardScreen } from './screens/DashboardScreen';
+import { PersonaSettingsScreen } from './screens/PersonaSettingsScreen';
+import { ContactsScreen } from './screens/ContactsScreen';
+import { ConversationsScreen } from './screens/ConversationsScreen';
 
 // function RootRedirect() {
 //   const { isAuthenticated, isLoading } = useAuth();
@@ -18,18 +19,24 @@ import { DashboardScreen } from './screens/DashboardScreen';
 //     );
 //   }
 //
-//   return <Navigate to={isAuthenticated ? '/main-menu' : '/login'} replace />;
+//   return <Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />;
 // }
 
 export function AppRoutes() {
-  return (
-    <Router
-      main={
-        <Route element={<AppLayout />}>
-          {/* <Route element={<RootRedirect />} path="/" /> */}
-          <Route element={<DashboardScreen />} path="/dashboard" />
-        </Route>
-      }
-    />
-  );
+    return (
+        <Router
+            main={
+                <Route element={<AppLayout />}>
+                    {/* Redirect root to dashboard */}
+                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+                    {/* Main Routes */}
+                    <Route path="/dashboard" element={<DashboardScreen />} />
+                    <Route path="/persona-settings" element={<PersonaSettingsScreen />} />
+                    <Route path="/contacts" element={<ContactsScreen />} />
+                    <Route path="/conversations" element={<ConversationsScreen />} />
+                </Route>
+            }
+        />
+    );
 }
