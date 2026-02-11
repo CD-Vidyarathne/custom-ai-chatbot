@@ -8,7 +8,7 @@ export const DashboardScreen: React.FC = () => {
     };
 
     return (
-        <div className="h-full">
+        <div className="min-h-full">
             <div className="mb-6">
                 <h1 className="text-3xl font-bold text-(--color-text-primary)">
                     Dashboard
@@ -19,7 +19,6 @@ export const DashboardScreen: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                {/* Total Conversations */}
                 <div className="bg-white rounded-xl p-6 shadow-sm border border-(--color-border)">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-sm font-medium text-(--color-text-muted)">

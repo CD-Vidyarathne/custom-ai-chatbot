@@ -4,22 +4,14 @@ import { TopNavbar } from './components/TopNavbar';
 
 export function AppLayout() {
     return (
-        <div
-            className="screen-container flex"
-            style={{ backgroundColor: 'var(--color-bg-primary)' }}
-        >
-            {/* Side Navbar */}
+        <div className="h-screen w-screen flex bg-(--color-bg-primary)">
             <SideNavbar />
 
-            {/* Main Content Area */}
-            <div className="flex-1 flex flex-col overflow-hidden">
-                {/* Top Navbar */}
+            <div className="w-full flex flex-col">
                 <TopNavbar />
-
-                {/* Page Content */}
-                <div className="flex-1 overflow-auto p-6">
+                <main className="flex-1 h-full overflow-y-auto p-6">
                     <Outlet />
-                </div>
+                </main>
             </div>
         </div>
     );

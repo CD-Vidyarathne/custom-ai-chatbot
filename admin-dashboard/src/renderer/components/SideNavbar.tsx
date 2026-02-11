@@ -36,7 +36,7 @@ export function SideNavbar() {
         },
         {
             id: 'contacts',
-            label: 'Contacts and Leads',
+            label: 'Contacts|Leads',
             icon: <Users className="w-5 h-5" />,
             path: '/contacts',
         },
@@ -58,7 +58,7 @@ export function SideNavbar() {
 
     return (
         <div
-            className={`h-full flex flex-col border-r bg-white transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-64'} border-(--color-border)`}
+            className={`h-full min-h-full flex flex-col border-r bg-white transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-64'} border-(--color-border)`}
         >
             <div className="p-6">
                 <div className="flex items-center justify-center">
