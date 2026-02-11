@@ -10,7 +10,7 @@
     "email": "chamindudvidyarathne@gmail.com"
   },
   "license": "MIT",
-  "packageManager": "pnpm@10.0.0",
+  "packageManager": "pnpm@10.29.3",
   "pnpm": {
     "onlyBuiltDependenciesFile": "./trusted-dependencies-scripts.json"
   },

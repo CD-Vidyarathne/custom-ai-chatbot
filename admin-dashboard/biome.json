@@ -1,7 +1,76 @@
 {
-  "$schema": "../node_modules/@biomejs/biome/configuration_schema.json",
-  "extends": ["../biome.json"],
-  "files": {
-    "experimentalScannerIgnores": ["dist", "node_modules", ".dev", "release"]
-  }
+	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "off",
+				"useSortedAttributes": "on",
+				"useSortedKeys": "off",
+				"useSortedProperties": "on"
+			}
+		},
+		"enabled": true
+	},
+	"files": {
+		"experimentalScannerIgnores": [
+			"dist",
+			"node_modules",
+			"**/dist",
+			"**/node_modules",
+			"**/.next",
+			"**/.dev",
+			"**/build",
+			"**/out",
+			"**/release"
+		]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "space",
+		"indentWidth": 2,
+		"lineEnding": "lf",
+		"lineWidth": 80
+	},
+	"javascript": {
+		"formatter": {
+			"arrowParentheses": "always",
+			"bracketSpacing": true,
+			"indentStyle": "space",
+			"jsxQuoteStyle": "double",
+			"quoteStyle": "single",
+			"semicolons": "always",
+			"trailingCommas": "es5"
+		}
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"a11y": {
+				"noSvgWithoutTitle": "off",
+				"useButtonType": "off",
+				"noAutofocus": "off",
+				"noLabelWithoutControl": "off"
+			},
+			"complexity": {
+				"noBannedTypes": "warn"
+			},
+			"correctness": {
+				"noUnusedImports": "warn",
+				"useExhaustiveDependencies": "off",
+				"useIsNan": "off"
+			},
+			"recommended": true,
+			"style": {
+				"noUselessElse": "warn"
+			},
+			"suspicious": {
+				"noArrayIndexKey": "info",
+				"noDuplicateObjectKeys": "warn",
+				"noDuplicateProperties": "warn",
+				"noEmptyInterface": "off",
+				"noExplicitAny": "off",
+				"noUnknownAtRules": "off"
+			}
+		}
+	}
 }
