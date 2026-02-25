@@ -1,0 +1,30 @@
+@import url("https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Poppins:wght@400;500;600;700&family=Rubik+Puddles&display=swap");
+@import "tailwindcss";
+
+:root {
+  --color-primary: #424874;
+  --color-primary-dark: #2f335c;
+  --color-primary-light: #6b72a8;
+
+  --color-secondary: #a6b1e1;
+  --color-accent: #dcd6f7;
+
+  --color-success: #8fb9a8;
+  --color-danger: #d88fa3;
+  --color-warning: #e6c88c;
+  --color-info: #9db4e0;
+
+  --color-bg-primary: #f4eeff;
+  --color-bg-secondary: #dcd6f7;
+  --color-bg-tertiary: #a6b1e1;
+
+  --color-bg-glass: rgba(66, 72, 116, 0.08);
+  --color-bg-glass-hover: rgba(66, 72, 116, 0.14);
+
+  --color-text-primary: #2b2f55;
+  --color-text-secondary: #424874;
+  --color-text-muted: #6f74a8;
+
+  --color-border: rgba(66, 72, 116, 0.25);
+  --color-border-focus: rgba(66, 72, 116, 0.5);
+}
