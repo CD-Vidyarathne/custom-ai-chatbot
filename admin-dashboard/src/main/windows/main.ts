@@ -6,35 +6,35 @@ import { ENVIRONMENT } from 'shared/constants';
 import { displayName } from '~/package.json';
 
 export async function MainWindow() {
-  const window = createWindow({
-    id: 'main',
-    title: displayName,
-    width: 1280,
-    height: 768,
-    show: false,
-    movable: true,
-    alwaysOnTop: false,
-    autoHideMenuBar: true,
-    resizable: false,
+    const window = createWindow({
+        id: 'main',
+        title: displayName,
+        width: 1280,
+        height: 768,
+        show: false,
+        movable: true,
+        alwaysOnTop: false,
+        autoHideMenuBar: true,
+        resizable: false,
 
-    webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-    },
-  });
+        webPreferences: {
+            preload: join(__dirname, '../preload/index.js'),
+        },
+    });
 
-  window.webContents.on('did-finish-load', () => {
-    // if (ENVIRONMENT.IS_DEV) {
-    //   window.webContents.openDevTools({ mode: 'detach' })
-    // }
+    window.webContents.on('did-finish-load', () => {
+        // if (ENVIRONMENT.IS_DEV) {
+        //   window.webContents.openDevTools({ mode: 'detach' })
+        // }
 
-    window.show();
-  });
+        window.show();
+    });
 
-  window.on('close', () => {
-    for (const window of BrowserWindow.getAllWindows()) {
-      window.destroy();
-    }
-  });
+    window.on('close', () => {
+        for (const window of BrowserWindow.getAllWindows()) {
+            window.destroy();
+        }
+    });
 
-  return window;
+    return window;
 }
