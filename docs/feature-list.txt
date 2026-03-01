@@ -1,0 +1,39 @@
+1. Client-Facing Chat Interface
+
+Interactive Chat Widget: A floating chat bubble that loads on the website and initiates sessions upon user interaction.
+
+AI-Powered Messaging: Real-time, natural language conversation capability with automated responses delivered in under 5 seconds.
+
+Customs & Clearance FAQ: An automated knowledge assistant that provides guidance on international shipping documentation and potential delays.
+
+Smart Lead Capture: A triggered mechanism to collect visitor contact details (name, email, phone) only when human follow-up or quotes are required.
+
+Conversation Continuity: Display of message history with timestamps and the ability to resume sessions within a defined time window.
+
+2. Desktop Admin Application
+
+Secure Authentication: Token-based login system for authorized staff with session expiration and failed-attempt rejection.
+
+Live Chat Monitor: A dashboard to view active sessions and incoming messages in real-time using WebSocket/SSE technology.
+
+Historical Transcript Review: A searchable archive of past conversations, filterable by date, status, keyword, or visitor contact.
+
+Knowledge Base Management: A "no-code" interface for admins to add, edit, or disable FAQ entries and logistics topics.
+
+Prompt Engineering Tools: A configuration suite to edit the system prompt (AI personality), test changes before publishing, and track version history.
+
+Analytics Dashboard: Visual reporting on top user questions, chat volume trends, and average AI response times.
+
+Lead Management & Export: A dedicated view for captured sales leads with functionality to export data to CSV for CRM integration.
+
+3. Core System & Security Features
+
+Session Management: Generation and storage of unique session IDs to maintain conversation state across the database.
+
+Rate Limiting & Anti-Abuse: Security protocols to limit messages per IP/Session to prevent spam and system overload.
+
+Data Encryption: Secure storage of all chat and lead data (PostgreSQL/Supabase) with specific encryption for sensitive contact information.
+
+Confidence-Based Fallback: A safety mechanism that triggers a "safe fallback message" or suggests human contact when AI confidence is low.
+
+Audit & Error Logging: A comprehensive logging system that tracks admin actions (audit trail) and monitors API/AI provider errors.
