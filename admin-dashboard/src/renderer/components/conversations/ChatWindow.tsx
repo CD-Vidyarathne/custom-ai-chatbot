@@ -32,10 +32,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ messages }) => {
                     ))
                 )}
             </div>
-            <div className="text-(--color-text-muted) cursor-pointer">
-                <span className="vertical-dots">...</span>
-                {/* Options menu logic */}
-            </div>
         </div>
     );
 };

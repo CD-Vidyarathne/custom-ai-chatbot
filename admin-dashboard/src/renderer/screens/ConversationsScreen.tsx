@@ -1,13 +1,13 @@
 import { ChatList } from "../components/conversations/ChatList";
 import { ChatWindow } from "../components/conversations/ChatWindow";
-import { ChatInput } from "../components/conversations/ChatInput";
-import { InsightPanel } from "../components/conversations/InsightPanel";
 import { Conversation, Message } from "../components/conversations/types";
+import { generateChatTranscript } from "../components/utils/pdfGenerator";
 import React, { useState } from "react";
 
 export function ConversationsScreen() {
     const [activeChatId, setActiveChatId] = useState<string | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const conversations: Conversation[] = [
         {
@@ -21,15 +21,10 @@ export function ConversationsScreen() {
             id: "2",
             name: "User 78",
             avatar: "https://via.placeholder.com/40",
-            status: "Human Help Needed",
+            status: "Active AI",
             timestamp: "12:45 PM",
         },
     ];
-
-    const customerDetails = {
-        ipLocation: "127.0.0.1",
-        currentPage: "http://example.com",
-    };
 
     const handleSelectChat = (id: string) => {
         setActiveChatId(id);
@@ -37,13 +32,6 @@ export function ConversationsScreen() {
         setMessages([
             { sender: "user", content: "Hello!" },
             { sender: "ai", content: "Hi there! How can I assist you today?" },
-        ]);
-    };
-
-    const handleSendMessage = (message: string) => {
-        setMessages((prevMessages) => [
-            ...prevMessages,
-            { sender: "user", content: message },
         ]);
     };
 
@@ -64,21 +52,8 @@ export function ConversationsScreen() {
                 </p>
             </div>
 
-            {/* <div
-                className="bg-white rounded-xl p-6 shadow-sm border"
-                style={{ borderColor: 'var(--color-border)' }}
-            >
-                <div
-                    className="text-center py-12"
-                    style={{ color: 'var(--color-text-muted)' }}
-                >
-                    <p>No conversations yet</p>
-                </div>
-            </div> */}
-
             <div className="h-full flex space-x-6">
-                {/* Left Pane: Conversation List */}
-                <div className="w-1/4 bg-white rounded-xl shadow-sm border border-(--color-border) flex flex-col">
+                <div className="w-1/3 bg-white rounded-xl shadow-sm border border-(--color-border) flex flex-col">
                     <div className="p-4 border-b border-(--color-border)">
                         <h1 className="text-xl font-semibold text-(--color-text-primary)">
                             Conversations List
@@ -97,7 +72,6 @@ export function ConversationsScreen() {
                     />
                 </div>
 
-                {/* Middle Pane: Chat Window */}
                 <div className="flex-1 bg-white rounded-xl shadow-sm border border-(--color-border) flex flex-col">
                     <div className="p-4 border-b border-(--color-border) flex items-center justify-between">
                         <div>
@@ -108,7 +82,7 @@ export function ConversationsScreen() {
                                 <img
                                     src={
                                         conversations.find(
-                                            (chat) => chat.id === activeChatId,
+                                            (chat) => chat.id === activeChatId
                                         )?.avatar || ""
                                     }
                                     alt="Avatar"
@@ -121,12 +95,14 @@ export function ConversationsScreen() {
                                     }}
                                 >
                                     {conversations.find(
-                                        (chat) => chat.id === activeChatId,
-                                    )?.name || "Select a conversation"}
+                                        (chat) => chat.id === activeChatId
+                                    )?.name ||
+                                        "Select a conversation from the conversations list"}
                                 </span>
                             </div>
                         </div>
                         <div
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
                             className="text-2xl cursor-pointer hover:bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center transition-colors"
                             style={{
                                 color: "var(--color-text-muted)",
@@ -136,36 +112,48 @@ export function ConversationsScreen() {
                         >
                             &#8942;
                         </div>
+
+                        {isMenuOpen && (
+                            <>
+                                <div
+                                    className="fixed inset-0 z-10"
+                                    onClick={() => setIsMenuOpen(false)}
+                                ></div>
+
+                                <div
+                                    className="absolute right-10 mt-12 w-48 bg-white rounded-md shadow-lg border z-20 overflow-hidden"
+                                    style={{
+                                        borderColor: "var(--color-border)",
+                                    }}
+                                >
+                                    <button
+                                        disabled={!activeChatId}
+                                        onClick={() => {
+                                            const activeChat =
+                                                conversations.find(
+                                                    (c) => c.id === activeChatId
+                                                );
+                                            if (!activeChat) return;
+
+                                            generateChatTranscript(
+                                                activeChat.name,
+                                                messages
+                                            );
+                                            setIsMenuOpen(false);
+                                        }}
+                                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2"
+                                        style={{
+                                            color: "var(--color-text-primary)",
+                                        }}
+                                    >
+                                        <span>📥</span>
+                                        <span>Download Transcript</span>
+                                    </button>
+                                </div>
+                            </>
+                        )}
                     </div>
                     <ChatWindow messages={messages} />
-                    <div className="mt-auto border-t border-(--color-border) p-4">
-                        <label className="flex items-center mb-4">
-                            <button
-                                className="bg-gray-200 rounded-full w-12 h-6 flex items-center focus:outline-none"
-                                onClick={() => {
-                                    /* toggle functionality */
-                                }}
-                            >
-                                <span className="w-4 h-4 bg-white rounded-full shadow transform transition-transform duration-300"></span>
-                            </button>
-                            <span className="ml-2 text-sm text-(--color-text-primary)">
-                                Pause AI
-                            </span>
-                        </label>
-                        <textarea
-                            placeholder="Human reply..."
-                            className="w-full p-2 border rounded text-sm"
-                            style={{ borderColor: "var(--color-border)" }}
-                        ></textarea>
-                    </div>
-                </div>
-
-                {/* Right Pane: Context & Insights */}
-                <div className="w-1/4 bg-white rounded-xl shadow-sm border border-(--color-border) flex flex-col">
-                    <InsightPanel
-                        confidenceScore={85}
-                        customerDetails={customerDetails}
-                    />
                 </div>
             </div>
         </div>

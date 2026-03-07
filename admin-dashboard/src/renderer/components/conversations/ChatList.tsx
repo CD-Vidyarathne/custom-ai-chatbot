@@ -1,13 +1,8 @@
 import React from "react";
+import { Conversation } from "./types";
 
 interface ChatListProps {
-    chats: Array<{
-        id: string;
-        name: string;
-        avatar: string;
-        status: string;
-        timestamp: string;
-    }>;
+    chats: Conversation[];
     activeChatId: string;
     onSelectChat: (id: string) => void;
 }
@@ -18,10 +13,7 @@ export const ChatList: React.FC<ChatListProps> = ({
     onSelectChat,
 }) => {
     return (
-        <div
-            className="bg-white h-full flex flex-col"
-            style={{ borderColor: "var(--color-border)" }}
-        >
+        <div className="bg-white h-full flex flex-col">
             <div className="flex-1 overflow-y-auto">
                 {chats.map((chat) => (
                     <div
