@@ -10,8 +10,17 @@ export default function ChatWindow({ onClose }: { onClose: () => void }) {
     <div className="flex h-[550px] w-[380px] flex-col overflow-hidden rounded-2xl bg-(--color-bg-primary) shadow-2xl ring-1 ring-(--color-border) animate-in slide-in-from-bottom-5 duration-300">
       <header className="flex items-center justify-between bg-(--color-primary) p-4 text-white">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-(--color-accent)/20" />
-          <h3 className="text-sm font-semibold">Support Chat</h3>
+          <div className="h-9 w-9 overflow-hidden rounded-full bg-(--color-bg-secondary) ring-1 ring-white/20">
+            <img
+              src="/sinofetch-assistant.svg"
+              alt="Sinofetch Assistant"
+              className="h-full w-full object-contain"
+            />
+          </div>
+          <div className="leading-tight">
+            <h3 className="text-sm font-semibold">Sinofetch Assistant</h3>
+            <p className="text-xs text-white/80">Logistics support</p>
+          </div>
         </div>
         <button
           onClick={onClose}
