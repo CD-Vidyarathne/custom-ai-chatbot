@@ -15,11 +15,18 @@
       color: #0F0F0F;
     }
   </style>
+  <script src="http://localhost:3090/chat-bubble.js"></script>
 
 </head>
 
 <body>
   <h1>This is Sinofetch Demo Site</h1>
+  <script>
+    window.customWebChat.init({
+      hostUrl: "http://localhost:3090",
+      chatId: "03ace826-cda5-4d3e-8d66-6f51d281676a"
+    });
+  </script>
 </body>
 
 </html>

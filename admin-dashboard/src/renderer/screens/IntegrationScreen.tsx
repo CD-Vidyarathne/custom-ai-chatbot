@@ -58,7 +58,7 @@ export const IntegrationScreen: React.FC = () => {
     void loadOrg();
   }, [user, isConfigured, authLoading]);
 
-  const hostUrl = API_BASE_URL.replace(/\/+$/, '');
+  const hostUrl = "http://localhost:3090";
   const scriptSrc = `${hostUrl}/chat-bubble.js`;
   const resolvedOrgId = orgId ?? '<organization_id_not_found>';
 

@@ -22,8 +22,9 @@
     container.style.bottom = "16px";
     container.style.right = "16px";
     container.style.zIndex = "2147483647";
-    container.style.width = "80px";
-    container.style.height = "80px";
+    // Closed size matches the chat bubble (64x64) with minimal padding.
+    container.style.width = "72px";
+    container.style.height = "72px";
     container.style.border = "none";
     container.style.background = "transparent";
     container.style.overflow = "hidden";
@@ -57,16 +58,18 @@
   function setSizeForState(openOrClosed) {
     var container = createContainer();
     if (openOrClosed === "open") {
-      container.style.width = "380px";
-      container.style.height = "560px";
+      container.style.width = "400px";
+      container.style.height = "620px";
       if (state.iframe) {
-        state.iframe.style.borderRadius = "24px";
+        state.iframe.style.boxShadow = "none";
+        state.iframe.style.border = "none";
       }
     } else {
-      container.style.width = "80px";
-      container.style.height = "80px";
+      container.style.width = "96px";
+      container.style.height = "96px";
       if (state.iframe) {
-        state.iframe.style.borderRadius = "9999px";
+        state.iframe.style.boxShadow = "none";
+        state.iframe.style.border = "none";
       }
     }
   }
