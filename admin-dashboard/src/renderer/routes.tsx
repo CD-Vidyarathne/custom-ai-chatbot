@@ -10,6 +10,7 @@ import { PersonaSettingsScreen } from './screens/PersonaSettingsScreen';
 import { LeadsScreen } from './screens/LeadsScreen';
 import { LeadDetailScreen } from './screens/LeadDetailScreen';
 import { ConversationsScreen } from './screens/ConversationsScreen';
+import { OrganizationSetupScreen } from './screens/OrganizationSetupScreen';
 
 export function AppRoutes() {
   return (
@@ -27,6 +28,7 @@ export function AppRoutes() {
           >
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<DashboardScreen />} />
+            <Route path="/organization" element={<OrganizationSetupScreen />} />
             <Route path="/persona-settings" element={<PersonaSettingsScreen />} />
             <Route path="/contacts" element={<LeadsScreen />} />
             <Route path="/contacts/:id" element={<LeadDetailScreen />} />

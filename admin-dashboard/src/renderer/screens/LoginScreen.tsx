@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 
 export function LoginScreen() {
   const navigate = useNavigate();
@@ -13,10 +14,25 @@ export function LoginScreen() {
     e.preventDefault();
     clearError();
     setSubmitting(true);
-    const { error: err } = await signIn(email.trim(), password);
+    const { error: err, user } = await signIn(email.trim(), password);
     setSubmitting(false);
-    if (err) return;
-    navigate('/dashboard', { replace: true });
+    if (err || !user) return;
+
+    // After successful login, check if the user already has an organization.
+    const { data, error } = await supabase
+      .from('organization')
+      .select('org_id')
+      .eq('owner_user_id', user.id)
+      .eq('is_active', true)
+      .limit(1)
+      .maybeSingle();
+
+    if (!error && data) {
+      navigate('/dashboard', { replace: true });
+      return;
+    }
+
+    navigate('/organization', { replace: true });
   };
 
   if (!isConfigured) {

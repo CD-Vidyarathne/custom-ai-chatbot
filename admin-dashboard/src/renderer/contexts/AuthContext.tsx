@@ -13,8 +13,8 @@ type AuthState = {
 };
 
 type AuthActions = {
-  signIn: (email: string, password: string) => Promise<{ error: string | null }>;
-  signUp: (email: string, password: string) => Promise<{ error: string | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: string | null; user: User | null }>;
+  signUp: (email: string, password: string) => Promise<{ error: string | null; user: User | null }>;
   signOut: () => Promise<void>;
   clearError: () => void;
 };
@@ -62,22 +62,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     setError(null);
-    const { error: e } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error: e } = await supabase.auth.signInWithPassword({ email, password });
     if (e) {
       setError(e.message);
-      return { error: e.message };
+      return { error: e.message, user: null };
     }
-    return { error: null };
+    return { error: null, user: data.user ?? null };
   }, []);
 
   const signUp = useCallback(async (email: string, password: string) => {
     setError(null);
-    const { error: e } = await supabase.auth.signUp({ email, password });
+    const { data, error: e } = await supabase.auth.signUp({ email, password });
     if (e) {
       setError(e.message);
-      return { error: e.message };
+      return { error: e.message, user: null };
     }
-    return { error: null };
+    return { error: null, user: data.user ?? null };
   }, []);
 
   const signOut = useCallback(async () => {
