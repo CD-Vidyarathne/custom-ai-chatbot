@@ -1,11 +1,31 @@
-export default function InitialForm({
-  onComplete,
-}: {
-  onComplete: () => void;
-}) {
-  const handleSubmit = (e: React.FormEvent) => {
+import type React from "react";
+
+export interface InitialFormValues {
+  name: string;
+  email: string;
+  mobile: string;
+}
+
+export interface InitialFormProps {
+  onComplete: (values: InitialFormValues) => void;
+  loading?: boolean;
+  error?: string | null;
+}
+
+export default function InitialForm({ onComplete, loading, error }: InitialFormProps) {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onComplete();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const name = String(formData.get("name") ?? "").trim();
+    const mobile = String(formData.get("mobile") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim();
+
+    if (!name || !mobile || !email) {
+      return;
+    }
+
+    onComplete({ name, mobile, email });
   };
 
   return (
@@ -42,11 +62,17 @@ export default function InitialForm({
         autoComplete="email"
         className="w-full rounded-lg border border-(--color-border) bg-white p-3 text-sm text-(--color-text-primary) focus:border-(--color-primary) focus:outline-none"
       />
+      {error ? (
+        <p className="text-sm text-red-600" role="alert">
+          {error}
+        </p>
+      ) : null}
       <button
         type="submit"
-        className="mt-2 w-full rounded-lg bg-(--color-primary) py-3 font-semibold text-white transition-colors hover:bg-(--color-primary-dark)"
+        disabled={loading}
+        className="mt-2 w-full rounded-lg bg-(--color-primary) py-3 font-semibold text-white transition-colors hover:bg-(--color-primary-dark) disabled:cursor-not-allowed disabled:opacity-70"
       >
-        Start Conversation
+        {loading ? "Starting..." : "Start Conversation"}
       </button>
     </form>
   );
