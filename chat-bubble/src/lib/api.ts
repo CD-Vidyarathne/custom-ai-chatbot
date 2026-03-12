@@ -38,6 +38,30 @@ export interface SendMessageResult {
   conversation_id: string;
 }
 
+export interface CaptureLeadInput {
+  sessionId?: string;
+  consumerId?: string;
+  orgId?: string;
+  name?: string | null;
+  email?: string | null;
+  phone_number?: string | null;
+  notes?: string | null;
+}
+
+export interface Lead {
+  lead_id: string;
+  consumer_id: string;
+  session_id: string | null;
+  org_id: string;
+  name: string | null;
+  email: string | null;
+  phone_number: string | null;
+  notes: string | null;
+  status: string;
+  captured_at: string;
+  updated_at: string;
+}
+
 export class ApiError extends Error {
   status: number;
   body: unknown;
@@ -142,9 +166,26 @@ export async function getMessagesApi(
   );
 }
 
+export async function captureLeadApi(input: CaptureLeadInput): Promise<Lead> {
+  const body: Record<string, unknown> = {};
+  if (input.sessionId) body.session_id = input.sessionId;
+  if (input.consumerId) body.consumer_id = input.consumerId;
+  if (input.orgId) body.org_id = input.orgId;
+  if (input.name !== undefined) body.name = input.name;
+  if (input.email !== undefined) body.email = input.email;
+  if (input.phone_number !== undefined) body.phone_number = input.phone_number;
+  if (input.notes !== undefined) body.notes = input.notes;
+
+  return request<Lead>("/api/leads", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
 export const CHAT_STORAGE_KEYS = {
   conversationId: "cb_conversation_id",
   consumerId: "cb_consumer_id",
   leadInfo: "cb_lead_info",
+  leadCaptured: "cb_lead_captured",
 } as const;
 

@@ -11,6 +11,7 @@ import {
   sendMessageApi,
   type ChatMessage,
   ApiError,
+  captureLeadApi,
 } from "@/lib/api";
 
 type Step = "form" | "chat";
@@ -57,6 +58,7 @@ export default function ChatWindow({ onClose }: { onClose: () => void }) {
   const [sending, setSending] = useState(false);
   const [storedLead, setStoredLead] = useState<InitialFormValues | null>(null);
   const [autoStartingFromLead, setAutoStartingFromLead] = useState(false);
+  const [leadCaptured, setLeadCaptured] = useState(false);
 
   const hasBackendConfig = useMemo(
     () => Boolean(effectiveOrgId),
@@ -74,6 +76,9 @@ export default function ChatWindow({ onClose }: { onClose: () => void }) {
     const storedLeadInfo = window.localStorage.getItem(
       CHAT_STORAGE_KEYS.leadInfo,
     );
+    const storedLeadCaptured = window.localStorage.getItem(
+      CHAT_STORAGE_KEYS.leadCaptured,
+    );
 
     if (storedConversationId) {
       setConversationId(storedConversationId);
@@ -88,6 +93,9 @@ export default function ChatWindow({ onClose }: { onClose: () => void }) {
       } catch {
         // ignore parse errors
       }
+    }
+    if (storedLeadCaptured === "true") {
+      setLeadCaptured(true);
     }
   }, []);
 
@@ -237,14 +245,20 @@ export default function ChatWindow({ onClose }: { onClose: () => void }) {
       } catch {
         // ignore initial load failure, poller will retry
       }
-      // Immediately load initial messages (including greeting) instead of waiting for the poller.
-      try {
-        const { messages: apiMessages } = await getMessagesApi(
-          result.conversation_id,
-        );
-        setMessages(mapApiMessages(apiMessages));
-      } catch {
-        // ignore initial load failure, poller will retry
+      // Capture lead (once) so it appears in qualified_lead and marks session as lead_captured.
+      if (!leadCaptured) {
+        try {
+          await captureLeadApi({ sessionId: result.conversation_id });
+          setLeadCaptured(true);
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem(
+              CHAT_STORAGE_KEYS.leadCaptured,
+              "true",
+            );
+          }
+        } catch {
+          // Ignore capture failures in the widget; admin can still create leads from the dashboard.
+        }
       }
     } catch (err) {
       const message =
