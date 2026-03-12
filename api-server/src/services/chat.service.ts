@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { supabase } from '../config/supabase.js';
+import { getPersonaById } from './persona.service.js';
 import type { ChatStatus } from '../types/database.js';
 
 export interface CreateConversationInput {
@@ -72,6 +73,25 @@ export async function createConversation(
 
   if (sessionError) {
     throw new Error(`Failed to create session: ${sessionError.message}`);
+  }
+
+  // Optionally send a greeting / welcome message as the first system message
+  try {
+    const persona = await getPersonaById(input.persona_id);
+    const greeting =
+      persona?.greeting_message ??
+      (persona?.name
+        ? `Hi, I'm ${persona.name}. How can I help you today?`
+        : null);
+
+    if (greeting) {
+      // First message in a new session uses sequence_no = 0
+      await insertMessage(sessionId, 'system', greeting, 0);
+    }
+  } catch (err) {
+    // Do not fail session creation if greeting insertion fails; log and continue.
+    // eslint-disable-next-line no-console
+    console.error('Failed to insert greeting message for conversation:', err);
   }
 
   return { session_id: sessionId, consumer_id: consumerId };

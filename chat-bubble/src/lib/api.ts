@@ -38,6 +38,18 @@ export interface SendMessageResult {
   conversation_id: string;
 }
 
+export class ApiError extends Error {
+  status: number;
+  body: unknown;
+
+  constructor(message: string, status: number, body: unknown) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.body = body;
+  }
+}
+
 async function request<T>(
   path: string,
   options: RequestInit & { params?: Record<string, string> } = {},
@@ -63,7 +75,11 @@ async function request<T>(
       (body as { error?: string }).error ??
       (body as { message?: string }).message ??
       res.statusText;
-    throw new Error(message || `Request failed with status ${res.status}`);
+    throw new ApiError(
+      message || `Request failed with status ${res.status}`,
+      res.status,
+      body,
+    );
   }
 
   return body as T;
@@ -129,5 +145,6 @@ export async function getMessagesApi(
 export const CHAT_STORAGE_KEYS = {
   conversationId: "cb_conversation_id",
   consumerId: "cb_consumer_id",
+  leadInfo: "cb_lead_info",
 } as const;
 
