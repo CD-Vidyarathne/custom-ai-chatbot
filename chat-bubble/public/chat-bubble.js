@@ -22,13 +22,10 @@
     container.style.bottom = "16px";
     container.style.right = "16px";
     container.style.zIndex = "2147483647";
-    // Closed size matches the chat bubble (64x64) with minimal padding.
-    container.style.width = "72px";
-    container.style.height = "72px";
+    container.style.width = "96px";
+    container.style.height = "96px";
     container.style.border = "none";
     container.style.background = "transparent";
-    container.style.overflow = "hidden";
-    container.style.transition = "width 0.25s ease, height 0.25s ease";
     document.body.appendChild(container);
     state.container = container;
     return container;
@@ -42,7 +39,6 @@
     iframe.style.width = "100%";
     iframe.style.height = "100%";
     iframe.style.border = "none";
-    iframe.style.borderRadius = "9999px";
     iframe.style.boxShadow = "0 10px 30px rgba(0,0,0,0.25)";
     iframe.setAttribute("allow", "clipboard-read; clipboard-write");
     createContainer().appendChild(iframe);

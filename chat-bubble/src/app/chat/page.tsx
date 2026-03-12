@@ -17,7 +17,7 @@ export default function ChatPage() {
   }, [isOpen]);
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex h-full w-full items-center justify-center">
       {isOpen ? (
         <ChatWindow onClose={() => setIsOpen(false)} />
       ) : (
