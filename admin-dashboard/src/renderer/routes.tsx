@@ -1,4 +1,4 @@
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Navigate } from 'react-router-dom';
 import { Router } from 'lib/electron-router-dom';
 import { AppLayout } from './layout';
 import { RequireAuth } from './components/RequireAuth';
@@ -15,7 +15,7 @@ export function AppRoutes() {
   return (
     <Router
       main={
-        <Routes>
+        <>
           <Route path="/login" element={<RedirectIfAuth><LoginScreen /></RedirectIfAuth>} />
           <Route path="/register" element={<RedirectIfAuth><RegisterScreen /></RedirectIfAuth>} />
           <Route
@@ -32,7 +32,7 @@ export function AppRoutes() {
             <Route path="/contacts/:id" element={<LeadDetailScreen />} />
             <Route path="/conversations" element={<ConversationsScreen />} />
           </Route>
-        </Routes>
+        </>
       }
     />
   );

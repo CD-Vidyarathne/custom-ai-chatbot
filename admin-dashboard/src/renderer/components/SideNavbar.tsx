@@ -30,7 +30,7 @@ export function SideNavbar() {
         },
         {
             id: 'persona',
-            label: 'Persona Settings',
+            label: 'Persona',
             icon: <UserCircle className="w-5 h-5" />,
             path: '/persona-settings',
         },
