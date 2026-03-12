@@ -17,7 +17,7 @@ export interface ApiError {
 }
 
 /**
- * Get auth token for API requests. Override when auth is implemented (e.g. Supabase session).
+ * Get auth token for API requests. Set by AuthContext from Supabase session (syncs to api_token on login).
  */
 export function getAuthToken(): string | null {
   if (typeof window === 'undefined') return null;
