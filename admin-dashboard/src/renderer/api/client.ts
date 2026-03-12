@@ -64,3 +64,87 @@ export async function getAdminStats(orgId?: string): Promise<
   });
   return result;
 }
+
+// --- Leads ---
+
+export interface Lead {
+  lead_id: string;
+  consumer_id: string;
+  session_id: string | null;
+  org_id: string;
+  name: string | null;
+  email: string | null;
+  phone_number: string | null;
+  notes: string | null;
+  status: 'new' | 'contacted' | 'qualified' | 'closed';
+  captured_at: string;
+  updated_at: string;
+}
+
+export async function getLeads(orgId?: string): Promise<
+  | { data: { leads: Lead[] } }
+  | { error: string; status: number }
+> {
+  const result = await request<{ leads: Lead[] }>('/api/leads', {
+    params: orgId ? { org_id: orgId } : undefined,
+  });
+  return result;
+}
+
+export async function getLeadById(leadId: string): Promise<
+  | { data: Lead }
+  | { error: string; status: number }
+> {
+  return request<Lead>(`/api/leads/${leadId}`);
+}
+
+export async function updateLead(
+  leadId: string,
+  body: { name?: string | null; email?: string | null; phone_number?: string | null; notes?: string | null; status?: Lead['status'] }
+): Promise<{ data: Lead } | { error: string; status: number }> {
+  return request<Lead>(`/api/leads/${leadId}`, {
+    method: 'PUT',
+    body: JSON.stringify(body),
+  });
+}
+
+// --- Persona ---
+
+export interface Persona {
+  persona_id: string;
+  org_id: string;
+  name: string;
+  system_prompt: string;
+  greeting_message: string | null;
+  fallback_message: string | null;
+  ai_provider: string;
+  model_name: string;
+  temperature: number;
+  max_tokens: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function getPersona(params: { org_id?: string; persona_id?: string }): Promise<
+  | { data: Persona }
+  | { error: string; status: number }
+> {
+  if (!params.org_id && !params.persona_id) {
+    return { error: 'org_id or persona_id required', status: 400 };
+  }
+  const searchParams = new URLSearchParams();
+  if (params.org_id) searchParams.set('org_id', params.org_id);
+  if (params.persona_id) searchParams.set('persona_id', params.persona_id);
+  return request<Persona>(`/api/persona?${searchParams.toString()}`);
+}
+
+export async function updatePersona(
+  personaId: string,
+  body: Partial<Pick<Persona, 'name' | 'system_prompt' | 'greeting_message' | 'fallback_message' | 'ai_provider' | 'model_name' | 'temperature' | 'max_tokens' | 'is_active'>>
+): Promise<{ data: Persona } | { error: string; status: number }> {
+  return request<Persona>(`/api/persona/${personaId}`, {
+    method: 'PUT',
+    body: JSON.stringify(body),
+  });
+}

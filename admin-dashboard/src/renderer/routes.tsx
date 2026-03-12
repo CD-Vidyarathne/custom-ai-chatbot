@@ -3,7 +3,8 @@ import { Router } from 'lib/electron-router-dom';
 import { AppLayout } from './layout';
 import { DashboardScreen } from './screens/DashboardScreen';
 import { PersonaSettingsScreen } from './screens/PersonaSettingsScreen';
-import { ContactsScreen } from './screens/ContactsScreen';
+import { LeadsScreen } from './screens/LeadsScreen';
+import { LeadDetailScreen } from './screens/LeadDetailScreen';
 import { ConversationsScreen } from './screens/ConversationsScreen';
 
 // function RootRedirect() {
@@ -33,7 +34,8 @@ export function AppRoutes() {
                     {/* Main Routes */}
                     <Route path="/dashboard" element={<DashboardScreen />} />
                     <Route path="/persona-settings" element={<PersonaSettingsScreen />} />
-                    <Route path="/contacts" element={<ContactsScreen />} />
+                    <Route path="/contacts" element={<LeadsScreen />} />
+                    <Route path="/contacts/:id" element={<LeadDetailScreen />} />
                     <Route path="/conversations" element={<ConversationsScreen />} />
                 </Route>
             }
