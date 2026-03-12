@@ -1,11 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   getPersona,
   updatePersona,
   type Persona,
 } from '../api/client';
+import { supabase } from '../lib/supabase';
 import { LoadingSkeleton } from '../components/LoadingSkeleton';
 import { ErrorMessage } from '../components/ErrorMessage';
+import { useAuth } from '../contexts/AuthContext';
 
 const emptyForm = {
   name: '',
@@ -15,31 +17,36 @@ const emptyForm = {
 };
 
 export function PersonaSettingsScreen() {
+  const { user, loading: authLoading, isConfigured } = useAuth();
   const [persona, setPersona] = useState<Persona | null>(null);
+  const [isNew, setIsNew] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [loadOrgId, setLoadOrgId] = useState('');
-  const [loadPersonaId, setLoadPersonaId] = useState('');
+  const [orgId, setOrgId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
 
-  const fetchPersona = useCallback(async (orgId?: string, personaId?: string) => {
-    if (!orgId && !personaId) {
-      setError('Enter Organization ID or Persona ID to load.');
-      setPersona(null);
-      return;
-    }
+  const fetchPersona = useCallback(async (orgIdParam: string) => {
     setLoading(true);
     setError(null);
-    const result = await getPersona(orgId ? { org_id: orgId } : { persona_id: personaId! });
+    const result = await getPersona({ org_id: orgIdParam });
     setLoading(false);
     if ('error' in result) {
-      setError(result.status === 404 ? 'Persona not found.' : result.error);
+      if (result.status === 404) {
+        setError('Persona not found. Create one for your organization.');
+        setPersona(null);
+        setIsNew(true);
+        setForm(emptyForm);
+        return;
+      }
+      setError(result.error);
       setPersona(null);
+      setIsNew(false);
       return;
     }
     setPersona(result.data);
+    setIsNew(false);
     setForm({
       name: result.data.name,
       system_prompt: result.data.system_prompt,
@@ -48,11 +55,41 @@ export function PersonaSettingsScreen() {
     });
   }, []);
 
-  const handleLoadByOrg = () => fetchPersona(loadOrgId.trim() || undefined);
-  const handleLoadById = () => fetchPersona(undefined, loadPersonaId.trim() || undefined);
+  // Resolve the current user's organization and load its persona (one org → one persona).
+  useEffect(() => {
+    if (!isConfigured || authLoading) return;
+    if (!user) {
+      setError('You must be signed in to manage persona settings.');
+      return;
+    }
+
+    const loadForUser = async () => {
+      setLoading(true);
+      setError(null);
+      const { data, error } = await supabase
+        .from('organization')
+        .select('org_id')
+        .eq('owner_user_id', user.id)
+        .eq('is_active', true)
+        .limit(1)
+        .maybeSingle();
+      if (error || !data) {
+        setLoading(false);
+        setError('Organization not found for this user.');
+        setOrgId(null);
+        setPersona(null);
+        setIsNew(false);
+        return;
+      }
+
+      setOrgId(data.org_id);
+      await fetchPersona(data.org_id);
+    };
+
+    void loadForUser();
+  }, [user, authLoading, isConfigured, fetchPersona]);
 
   const handleSave = async () => {
-    if (!persona) return;
     const name = form.name.trim();
     const system_prompt = form.system_prompt.trim();
     if (!name) {
@@ -65,18 +102,64 @@ export function PersonaSettingsScreen() {
     }
     setSaving(true);
     setSaveError(null);
-    const result = await updatePersona(persona.persona_id, {
-      name,
-      system_prompt,
-      greeting_message: form.greeting_message.trim() || null,
-      fallback_message: form.fallback_message.trim() || null,
-    });
-    setSaving(false);
-    if ('error' in result) {
-      setSaveError(result.error);
-      return;
+
+    try {
+      if (isNew) {
+        if (!orgId) {
+          setSaveError('Organization is not available for this user.');
+          setSaving(false);
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from('persona')
+          .insert({
+            org_id: orgId,
+            name,
+            system_prompt,
+            greeting_message: form.greeting_message.trim() || null,
+            fallback_message: form.fallback_message.trim() || null,
+            ai_provider: 'openai',
+            model_name: 'gpt-4o-mini',
+            temperature: 0.7,
+            max_tokens: 1024,
+            is_active: true,
+          })
+          .select('*')
+          .maybeSingle();
+
+        setSaving(false);
+
+        if (error || !data) {
+          setSaveError(error?.message ?? 'Failed to create persona.');
+          return;
+        }
+
+        setPersona(data as Persona);
+        setIsNew(false);
+      } else {
+        if (!persona) {
+          setSaving(false);
+          return;
+        }
+
+        const result = await updatePersona(persona.persona_id, {
+          name,
+          system_prompt,
+          greeting_message: form.greeting_message.trim() || null,
+          fallback_message: form.fallback_message.trim() || null,
+        });
+        setSaving(false);
+        if ('error' in result) {
+          setSaveError(result.error);
+          return;
+        }
+        setPersona(result.data);
+      }
+    } catch (e) {
+      setSaving(false);
+      setSaveError(e instanceof Error ? e.message : 'Failed to save persona.');
     }
-    setPersona(result.data);
   };
 
   return (
@@ -90,57 +173,11 @@ export function PersonaSettingsScreen() {
         </p>
       </div>
 
-      <section className="bg-white rounded-xl p-6 shadow-sm border border-(--color-border)">
-        <h2 className="text-lg font-semibold mb-4 text-(--color-text-primary)">
-          Load persona
-        </h2>
-        <div className="flex flex-wrap items-end gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-1 text-(--color-text-secondary)">
-              Organization ID
-            </label>
-            <input
-              type="text"
-              placeholder="UUID"
-              value={loadOrgId}
-              onChange={(e) => setLoadOrgId(e.target.value)}
-              className="w-64 px-4 py-2 rounded-lg border border-(--color-border) text-(--color-text-primary) placeholder:text-(--color-text-muted) focus:outline-none focus:border-(--color-border-focus) bg-white"
-            />
-          </div>
-          <button
-            type="button"
-            onClick={handleLoadByOrg}
-            disabled={loading}
-            className="px-4 py-2 rounded-lg bg-(--color-primary) text-white hover:opacity-90 disabled:opacity-50"
-          >
-            {loading ? 'Loading…' : 'Load by org'}
-          </button>
-          <div className="text-(--color-text-muted)">or</div>
-          <div>
-            <label className="block text-sm font-medium mb-1 text-(--color-text-secondary)">
-              Persona ID
-            </label>
-            <input
-              type="text"
-              placeholder="UUID"
-              value={loadPersonaId}
-              onChange={(e) => setLoadPersonaId(e.target.value)}
-              className="w-64 px-4 py-2 rounded-lg border border-(--color-border) text-(--color-text-primary) placeholder:text-(--color-text-muted) focus:outline-none focus:border-(--color-border-focus) bg-white"
-            />
-          </div>
-          <button
-            type="button"
-            onClick={handleLoadById}
-            disabled={loading}
-            className="px-4 py-2 rounded-lg border border-(--color-border) text-(--color-text-primary) hover:bg-(--color-bg-glass) disabled:opacity-50"
-          >
-            Load by ID
-          </button>
-        </div>
-        {error && !persona && (
-          <ErrorMessage message={error} onRetry={() => fetchPersona(loadOrgId || undefined, loadPersonaId || undefined)} className="mt-4" />
-        )}
-      </section>
+      {error && !persona && !isNew && (
+        <section className="bg-white rounded-xl p-6 shadow-sm border border-(--color-border)">
+          <ErrorMessage message={error} className="mt-0" />
+        </section>
+      )}
 
       {loading && !persona && (
         <section className="bg-white rounded-xl p-6 shadow-sm border border-(--color-border) space-y-4">
@@ -150,7 +187,7 @@ export function PersonaSettingsScreen() {
         </section>
       )}
 
-      {persona && (
+      {(persona || isNew) && (
         <>
           <section className="bg-white rounded-xl p-6 shadow-sm border border-(--color-border)">
             <h2 className="text-lg font-semibold mb-4 text-(--color-text-primary)">
