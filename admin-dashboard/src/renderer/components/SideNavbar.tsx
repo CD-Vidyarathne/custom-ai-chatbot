@@ -7,6 +7,7 @@ import {
     Users,
     ChevronLeft,
     ChevronRight,
+    Plug,
 } from 'lucide-react';
 
 interface NavItem {
@@ -45,6 +46,12 @@ export function SideNavbar() {
             label: 'Conversations',
             icon: <MessageSquare className="w-5 h-5" />,
             path: '/conversations',
+        },
+        {
+            id: 'integration',
+            label: 'Integration',
+            icon: <Plug className="w-5 h-5" />,
+            path: '/integration',
         },
     ];
 

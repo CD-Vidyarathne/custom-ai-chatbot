@@ -11,6 +11,7 @@ import { LeadsScreen } from './screens/LeadsScreen';
 import { LeadDetailScreen } from './screens/LeadDetailScreen';
 import { ConversationsScreen } from './screens/ConversationsScreen';
 import { OrganizationSetupScreen } from './screens/OrganizationSetupScreen';
+import { IntegrationScreen } from './screens/IntegrationScreen';
 
 export function AppRoutes() {
   return (
@@ -33,6 +34,7 @@ export function AppRoutes() {
             <Route path="/contacts" element={<LeadsScreen />} />
             <Route path="/contacts/:id" element={<LeadDetailScreen />} />
             <Route path="/conversations" element={<ConversationsScreen />} />
+            <Route path="/integration" element={<IntegrationScreen />} />
           </Route>
         </>
       }
