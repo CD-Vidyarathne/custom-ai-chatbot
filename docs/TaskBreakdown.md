@@ -130,7 +130,6 @@ A simplified desktop chat application with embeddable chat bubble, admin dashboa
 - [ ] Set up global error handler
 - [ ] Create validation middleware (express-validator)
 - [ ] Add request logging
-- [ ] Implement rate limiting
 
 ### 3.10 Testing
 
