@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.middleware.js';
+import chatRoutes from './chat.routes.js';
 
 const router = Router();
 
@@ -11,8 +12,6 @@ router.get('/protected', requireAuth, (req, res) => {
   res.json({ message: 'You are authenticated', user: req.user?.id });
 });
 
-// TODO: Import and mount specific routers
-// import chatRoutes from './chat.routes';
-// router.use('/chat', requireAuth, chatRoutes);
+router.use('/chat', chatRoutes);
 
 export default router;
