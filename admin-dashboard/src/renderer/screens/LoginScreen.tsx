@@ -28,10 +28,16 @@ export function LoginScreen() {
       .maybeSingle();
 
     if (!error && data) {
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('org_id', data.org_id);
+      }
       navigate('/dashboard', { replace: true });
       return;
     }
 
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem('org_id');
+    }
     navigate('/organization', { replace: true });
   };
 
