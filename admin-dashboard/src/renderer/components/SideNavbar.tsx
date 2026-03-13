@@ -7,6 +7,7 @@ import {
     Users,
     ChevronLeft,
     ChevronRight,
+    Plug,
 } from 'lucide-react';
 
 interface NavItem {
@@ -30,13 +31,13 @@ export function SideNavbar() {
         },
         {
             id: 'persona',
-            label: 'Persona Settings',
+            label: 'Persona',
             icon: <UserCircle className="w-5 h-5" />,
             path: '/persona-settings',
         },
         {
             id: 'contacts',
-            label: 'Contacts|Leads',
+            label: 'Leads',
             icon: <Users className="w-5 h-5" />,
             path: '/contacts',
         },
@@ -45,6 +46,12 @@ export function SideNavbar() {
             label: 'Conversations',
             icon: <MessageSquare className="w-5 h-5" />,
             path: '/conversations',
+        },
+        {
+            id: 'integration',
+            label: 'Integration',
+            icon: <Plug className="w-5 h-5" />,
+            path: '/integration',
         },
     ];
 

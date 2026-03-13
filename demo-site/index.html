@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sinofetch Demo Site</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: #050816;
+      color: #ffffff;
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero {
+      position: relative;
+      flex: 1;
+      background: linear-gradient(to bottom, rgba(3, 10, 34, 0.95), rgba(3, 10, 34, 0.98)),
+        radial-gradient(circle at 0 0, #2643e9 0, transparent 55%),
+        radial-gradient(circle at 100% 0, #0f9cf5 0, transparent 55%);
+      overflow: hidden;
+      padding-bottom: 4rem;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url("https://images.pexels.com/photos/799091/pexels-photo-799091.jpeg?auto=compress&cs=tinysrgb&w=1200") center bottom / cover no-repeat;
+      opacity: 0.2;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem 1.5rem 0;
+      z-index: 1;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #a3b3ff;
+      margin-bottom: 1.25rem;
+    }
+
+    .top-bar-center {
+      opacity: 0.9;
+    }
+
+    .top-bar-right {
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 0 2.75rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 1.1rem;
+    }
+
+    .logo-mark {
+      width: 40px;
+      height: 24px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #1a6dff, #4bc0ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      font-size: 0.95rem;
+      color: #cfd8ff;
+    }
+
+    .nav-links a {
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -0.25rem;
+      width: 0;
+      height: 2px;
+      background: #3b82f6;
+      transition: width 0.18s ease-out;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-links .active {
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .nav-cta {
+      padding: 0.65rem 1.4rem;
+      border-radius: 999px;
+      border: 1px solid #2563eb;
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.4);
+      transition: background 0.15s ease-out, transform 0.15s ease-out, box-shadow 0.15s ease-out;
+    }
+
+    .nav-cta:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 16px 40px rgba(37, 99, 235, 0.55);
+    }
+
+    .hero-content {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 3.5rem;
+      align-items: center;
+      padding-bottom: 3.5rem;
+    }
+
+    .hero-copy-eyebrow {
+      font-size: 0.85rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #9fb4ff;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-title {
+      font-size: clamp(2.5rem, 4vw, 3.2rem);
+      font-weight: 700;
+      margin-bottom: 0.85rem;
+    }
+
+    .hero-subtitle {
+      max-width: 560px;
+      color: #d1ddff;
+      font-size: 0.98rem;
+      margin-bottom: 2rem;
+    }
+
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .btn-primary,
+    .btn-outline {
+      padding: 0.85rem 1.9rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+      transition: background 0.16s ease-out, border-color 0.16s ease-out, transform 0.16s ease-out, box-shadow 0.16s ease-out;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 16px 40px rgba(37, 99, 235, 0.55);
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border-color: #4b6bff;
+      color: #e5edff;
+    }
+
+    .btn-outline:hover {
+      background: rgba(37, 99, 235, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 1.5rem;
+      text-align: right;
+      font-size: 0.95rem;
+      color: #a9b7ff;
+    }
+
+    .hero-meta-tagline {
+      max-width: 260px;
+    }
+
+    .hero-pill {
+      padding: 0.55rem 1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 255, 0.3);
+      background: radial-gradient(circle at 0 0, rgba(59, 130, 246, 0.5), transparent 60%);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #c7d2ff;
+    }
+
+    .stats-band {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      transform: translateY(36px);
+    }
+
+    .stats-panel {
+      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      border-radius: 8px;
+      padding: 2.1rem 2.2rem;
+      box-shadow: 0 22px 60px rgba(15, 23, 42, 0.6);
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr));
+      gap: 2.5rem;
+      color: #020617;
+    }
+
+    .stats-panel-heading-eyebrow {
+      font-size: 0.78rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #0f172a;
+      opacity: 0.85;
+      margin-bottom: 0.25rem;
+    }
+
+    .stats-panel-heading {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .stats-panel-body {
+      font-size: 0.9rem;
+      color: #020617;
+      opacity: 0.9;
+      max-width: 360px;
+    }
+
+    .stats-item-value {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.2rem;
+    }
+
+    .stats-item-label {
+      font-size: 0.9rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .stats-item-caption {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    .stats-cta {
+      margin-top: 1.25rem;
+    }
+
+    .stats-cta button {
+      padding: 0.65rem 1.5rem;
+      border-radius: 999px;
+      border: 1px solid #020617;
+      background: transparent;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .footer {
+      padding: 3.5rem 1.5rem 2.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    @media (max-width: 900px) {
+      .hero-content {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2.8rem;
+      }
+
+      .hero-meta {
+        align-items: flex-start;
+        text-align: left;
+      }
+
+      .stats-panel {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.75rem;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero-inner {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+      }
+
+      .nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .nav-links {
+        gap: 1.25rem;
+        font-size: 0.9rem;
+      }
+
+      .stats-panel {
+        padding: 1.6rem 1.5rem;
+      }
+    }
+  </style>
+  <script src="http://localhost:3090/chat-bubble.js"></script>
+</head>
+
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="top-bar">
+          <div></div>
+          <div class="top-bar-center">Make a call: 076 754 2111</div>
+          <div class="top-bar-right">
+            <span>Fb</span>
+            <span>In</span>
+            <span>Wa</span>
+          </div>
+        </div>
+
+        <header class="nav">
+          <div class="logo">
+            <div class="logo-mark">SF</div>
+            <span>Sinofetch</span>
+          </div>
+          <nav class="nav-links">
+            <a href="#" class="active">Home</a>
+            <a href="#">Services</a>
+            <a href="#">About</a>
+            <a href="#">Contact Us</a>
+          </nav>
+          <button class="nav-cta">Get a Quote</button>
+        </header>
+
+        <div class="hero-content">
+          <div>
+            <div class="hero-copy-eyebrow">At Sinofetch</div>
+            <h1 class="hero-title">We source, ship &amp; deliver machinery with confidence.</h1>
+            <p class="hero-subtitle">
+              We specialize in sourcing high‑quality machinery and equipment from trusted partners and delivering them
+              to your doorstep in Sri Lanka. As we expand into real estate and related sectors, we provide reliable
+              import solutions to support your business growth.
+            </p>
+            <div class="hero-buttons">
+              <button class="btn-primary">Our Services</button>
+              <button class="btn-outline">Contact Us</button>
+            </div>
+          </div>
+
+          <aside class="hero-meta">
+            <div class="hero-pill">Trusted Import Partner</div>
+            <p class="hero-meta-tagline">
+              From port to project, we manage logistics, customs, and delivery so you can stay focused on your business.
+            </p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-band">
+      <div class="stats-panel">
+        <div>
+          <div class="stats-panel-heading-eyebrow">Build Your Dream</div>
+          <div class="stats-panel-heading">Shaping success, one year strong</div>
+          <p class="stats-panel-body">
+            We go beyond machinery and logistics, exploring real estate, infrastructure, and allied services to create
+            a one‑stop solution for diverse business needs.
+          </p>
+          <div class="stats-cta">
+            <button type="button">Contact Us</button>
+          </div>
+        </div>
+        <div>
+          <div class="stats-item-value">50+</div>
+          <div class="stats-item-label">Successfully finished projects</div>
+          <div class="stats-item-caption">
+            Complex imports, tight timelines, and challenging locations delivered across Sri Lanka.
+          </div>
+        </div>
+        <div>
+          <div class="stats-item-value">2+</div>
+          <div class="stats-item-label">Years of experience</div>
+          <div class="stats-item-caption">
+            A growing team with deep expertise in sourcing, inspections, and logistics coordination.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      ©
+      <script>document.write(new Date().getFullYear());</script>
+      Sinofetch. All rights reserved.
+    </footer>
+  </div>
+
+  <script>
+    window.customWebChat.init({
+      hostUrl: "http://localhost:3090",
+      chatId: "03ace826-cda5-4d3e-8d66-6f51d281676a"
+    });
+  </script>
+</body>
+
+</html>

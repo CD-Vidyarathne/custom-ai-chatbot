@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sinofetch — ER Diagram</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik+Puddles&display=swap');
+
+    :root {
+      --bg: #f4f6f9;
+      --surface: #ffffff;
+      --border: #dde2ec;
+      --border-strong: #c4cdd8;
+      --accent: #1a6fd4;
+      --text: #1a2135;
+      --muted: #7a8ba0;
+      --subtle: #f0f3f8;
+      --pk: #b45309;
+      --fk: #9d174d;
+
+      --c-org: #1a6fd4;
+      --c-persona: #6d28d9;
+      --c-consumer: #0f7a55;
+      --c-session: #b45309;
+      --c-message: #0369a1;
+      --c-lead: #be185d;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      font-family: "Poppins", sans-serif;
+      color: var(--text);
+      /* A4 landscape proportion: 297 x 210mm → ~1414 x 1000px at 120dpi */
+      width: 1414px;
+      min-height: 1000px;
+    }
+
+    header {
+      padding: 18px 36px 16px;
+      border-bottom: 2px solid var(--border-strong);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #ffffff;
+    }
+
+    header h1 {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+    }
+
+    header .subtitle {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .legend {
+      display: flex;
+      gap: 18px;
+      margin-left: auto;
+      align-items: center;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+    }
+
+    .canvas-wrap {
+      padding: 32px 40px;
+      position: relative;
+    }
+
+    svg.er-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .er-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 290px 290px 290px;
+      grid-template-rows: auto auto auto;
+      gap: 32px 56px;
+      width: max-content;
+      margin: 0 auto;
+    }
+
+    .table-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
+    }
+
+    .table-header {
+      padding: 9px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1.5px solid var(--border);
+    }
+
+    .table-icon {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .table-name {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: var(--text);
+    }
+
+    .table-step {
+      margin-left: auto;
+      font-size: 9px;
+      color: var(--muted);
+      background: var(--subtle);
+      padding: 2px 6px;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+    }
+
+    .col-list {
+      padding: 4px 0;
+    }
+
+    .col-row {
+      padding: 3px 12px;
+      display: grid;
+      grid-template-columns: 18px 1fr auto;
+      gap: 5px;
+      align-items: center;
+      font-size: 10.5px;
+      line-height: 1.6;
+      border-left: 2px solid transparent;
+    }
+
+    .col-row.pk {
+      border-left-color: var(--pk);
+      background: rgba(180, 83, 9, 0.04);
+    }
+
+    .col-row.fk {
+      border-left-color: var(--fk);
+      background: rgba(157, 23, 77, 0.03);
+    }
+
+    .badge-pk,
+    .badge-fk {
+      font-size: 7.5px;
+      font-weight: 700;
+      padding: 1px 3px;
+      border-radius: 2px;
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+
+    .badge-pk {
+      background: rgba(180, 83, 9, 0.12);
+      color: var(--pk);
+      border: 1px solid rgba(180, 83, 9, 0.2);
+    }
+
+    .badge-fk {
+      background: rgba(157, 23, 77, 0.1);
+      color: var(--fk);
+      border: 1px solid rgba(157, 23, 77, 0.18);
+    }
+
+    .col-name {
+      color: #2d3748;
+      font-size: 10.5px;
+    }
+
+    .col-type {
+      color: #8a9bb0;
+      font-size: 9.5px;
+      text-align: right;
+    }
+
+    /* Grid positions */
+    .card-organization {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .card-persona {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .card-consumer {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    .card-chat_session {
+      grid-column: 3;
+      grid-row: 2;
+    }
+
+    .card-message {
+      grid-column: 1;
+      grid-row: 3;
+    }
+
+    .card-qualified_lead {
+      grid-column: 3;
+      grid-row: 3;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      font-size: 9px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      background: #fff;
+      letter-spacing: 0.06em;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>SINOFETCH</h1>
+    <span class="subtitle">Database Schema · V1.0 · ER Diagram</span>
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--pk)"></div><span>Primary Key</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--fk)"></div><span>Foreign Key</span>
+      </div>
+      <div class="legend-item">
+        <svg width="28" height="10" style="display:block">
+          <line x1="0" y1="5" x2="28" y2="5" stroke="#888" stroke-width="1.5" stroke-dasharray="4 3" />
+        </svg>
+        <span>Relationship</span>
+      </div>
+      <div class="legend-item">
+        <svg width="22" height="10"><text x="0" y="9" font-size="9" font-family="IBM Plex Mono" fill="#444"
+            font-weight="600">1:N</text></svg>
+        <span>Cardinality</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="canvas-wrap" id="canvasWrap">
+    <svg class="er-svg" id="erSvg"></svg>
+
+    <div class="er-grid" id="erGrid">
+
+      <!-- ORGANIZATION -->
+      <div class="table-card card-organization" id="t-organization">
+        <div class="table-header" style="background:#eef5ff">
+          <div class="table-icon" style="background:var(--c-org)"></div>
+          <span class="table-name" style="color:var(--c-org)">organization</span>
+          <span class="table-step">step 1</span>
+        </div>
+        <div class="col-list">
+          <div class="col-row pk"><span class="badge-pk">PK</span><span class="col-name">org_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row"><span></span><span class="col-name">owner_user_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row"><span></span><span class="col-name">org_name</span><span class="col-type">TEXT</span>
+          </div>
+          <div class="col-row"><span></span><span class="col-name">email</span><span class="col-type">TEXT</span></div>
+          <div class="col-row"><span></span><span class="col-name">is_active</span><span class="col-type">BOOL</span>
+          </div>
+          <div class="col-row"><span></span><span class="col-name">created_at</span><span
+              class="col-type">TIMESTAMPTZ</span></div>
+          <div class="col-row"><span></span><span class="col-name">updated_at</span><span
+              class="col-type">TIMESTAMPTZ</span></div>
+        </div>
+      </div>
+
+      <!-- PERSONA -->
+      <div class="table-card card-persona" id="t-persona">
+        <div class="table-header" style="background:#f3f0ff">
+          <div class="table-icon" style="background:var(--c-persona)"></div>
+          <span class="table-name" style="color:var(--c-persona)">persona</span>
+          <span class="table-step">step 2</span>
+        </div>
+        <div class="col-list">
+          <div class="col-row pk"><span class="badge-pk">PK</span><span class="col-name">persona_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row fk"><span class="badge-fk">FK</span><span class="col-name">org_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row"><span></span><span class="col-name">name</span><span class="col-type">TEXT</span></div>
+          <div class="col-row"><span></span><span class="col-name">system_prompt</span><span
+              class="col-type">TEXT</span></div>
+          <div class="col-row"><span></span><span class="col-name">greeting_message</span><span
+              class="col-type">TEXT</span></div>
+          <div class="col-row"><span></span><span class="col-name">fallback_message</span><span
+              class="col-type">TEXT</span></div>
+          <div class="col-row"><span></span><span class="col-name">ai_provider</span><span class="col-type">TEXT</span>
+          </div>
+          <div class="col-row"><span></span><span class="col-name">model_name</span><span class="col-type">TEXT</span>
+          </div>
+          <div class="col-row"><span></span><span class="col-name">temperature</span><span
+              class="col-type">NUMERIC</span></div>
+          <div class="col-row"><span></span><span class="col-name">max_tokens</span><span class="col-type">INT</span>
+          </div>
+          <div class="col-row"><span></span><span class="col-name">is_active</span><span class="col-type">BOOL</span>
+          </div>
+          <div class="col-row"><span></span><span class="col-name">created_at</span><span
+              class="col-type">TIMESTAMPTZ</span></div>
+          <div class="col-row"><span></span><span class="col-name">updated_at</span><span
+              class="col-type">TIMESTAMPTZ</span></div>
+        </div>
+      </div>
+
+      <!-- CONSUMER -->
+      <div class="table-card card-consumer" id="t-consumer">
+        <div class="table-header" style="background:#ecfdf5">
+          <div class="table-icon" style="background:var(--c-consumer)"></div>
+          <span class="table-name" style="color:var(--c-consumer)">consumer</span>
+          <span class="table-step">step 3</span>
+        </div>
+        <div class="col-list">
+          <div class="col-row pk"><span class="badge-pk">PK</span><span class="col-name">consumer_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row fk"><span class="badge-fk">FK</span><span class="col-name">persona_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row fk"><span class="badge-fk">FK</span><span class="col-name">org_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row"><span></span><span class="col-name">name</span><span class="col-type">TEXT</span></div>
+          <div class="col-row"><span></span><span class="col-name">email</span><span class="col-type">TEXT</span></div>
+          <div class="col-row"><span></span><span class="col-name">phone_number</span><span class="col-type">TEXT</span>
+          </div>
+          <div class="col-row"><span></span><span class="col-name">created_at</span><span
+              class="col-type">TIMESTAMPTZ</span></div>
+          <div class="col-row"><span></span><span class="col-name">updated_at</span><span
+              class="col-type">TIMESTAMPTZ</span></div>
+        </div>
+      </div>
+
+      <!-- CHAT_SESSION -->
+      <div class="table-card card-chat_session" id="t-chat_session">
+        <div class="table-header" style="background:#fffbeb">
+          <div class="table-icon" style="background:var(--c-session)"></div>
+          <span class="table-name" style="color:var(--c-session)">chat_session</span>
+          <span class="table-step">step 3</span>
+        </div>
+        <div class="col-list">
+          <div class="col-row pk"><span class="badge-pk">PK</span><span class="col-name">session_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row fk"><span class="badge-fk">FK</span><span class="col-name">consumer_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row fk"><span class="badge-fk">FK</span><span class="col-name">persona_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row fk"><span class="badge-fk">FK</span><span class="col-name">org_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row"><span></span><span class="col-name">status</span><span class="col-type">TEXT</span></div>
+          <div class="col-row"><span></span><span class="col-name">lead_captured</span><span
+              class="col-type">BOOL</span></div>
+          <div class="col-row"><span></span><span class="col-name">started_at</span><span
+              class="col-type">TIMESTAMPTZ</span></div>
+          <div class="col-row"><span></span><span class="col-name">ended_at</span><span
+              class="col-type">TIMESTAMPTZ</span></div>
+          <div class="col-row"><span></span><span class="col-name">created_at</span><span
+              class="col-type">TIMESTAMPTZ</span></div>
+          <div class="col-row"><span></span><span class="col-name">updated_at</span><span
+              class="col-type">TIMESTAMPTZ</span></div>
+        </div>
+      </div>
+
+      <!-- MESSAGE -->
+      <div class="table-card card-message" id="t-message">
+        <div class="table-header" style="background:#eff8ff">
+          <div class="table-icon" style="background:var(--c-message)"></div>
+          <span class="table-name" style="color:var(--c-message)">message</span>
+          <span class="table-step">step 4</span>
+        </div>
+        <div class="col-list">
+          <div class="col-row pk"><span class="badge-pk">PK</span><span class="col-name">msg_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row fk"><span class="badge-fk">FK</span><span class="col-name">session_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row fk"><span class="badge-fk">FK</span><span class="col-name">consumer_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row"><span></span><span class="col-name">sequence_no</span><span class="col-type">INT</span>
+          </div>
+          <div class="col-row"><span></span><span class="col-name">msg_source</span><span class="col-type">TEXT</span>
+          </div>
+          <div class="col-row"><span></span><span class="col-name">content</span><span class="col-type">TEXT</span>
+          </div>
+          <div class="col-row"><span></span><span class="col-name">tokens_used</span><span class="col-type">INT</span>
+          </div>
+          <div class="col-row"><span></span><span class="col-name">is_deleted</span><span class="col-type">BOOL</span>
+          </div>
+          <div class="col-row"><span></span><span class="col-name">created_at</span><span
+              class="col-type">TIMESTAMPTZ</span></div>
+        </div>
+      </div>
+
+      <!-- QUALIFIED_LEAD -->
+      <div class="table-card card-qualified_lead" id="t-qualified_lead">
+        <div class="table-header" style="background:#fdf2f8">
+          <div class="table-icon" style="background:var(--c-lead)"></div>
+          <span class="table-name" style="color:var(--c-lead)">qualified_lead</span>
+          <span class="table-step">step 5</span>
+        </div>
+        <div class="col-list">
+          <div class="col-row pk"><span class="badge-pk">PK</span><span class="col-name">lead_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row fk"><span class="badge-fk">FK</span><span class="col-name">consumer_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row fk"><span class="badge-fk">FK</span><span class="col-name">session_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row fk"><span class="badge-fk">FK</span><span class="col-name">org_id</span><span
+              class="col-type">UUID</span></div>
+          <div class="col-row"><span></span><span class="col-name">name</span><span class="col-type">TEXT</span></div>
+          <div class="col-row"><span></span><span class="col-name">email</span><span class="col-type">TEXT</span></div>
+          <div class="col-row"><span></span><span class="col-name">phone_number</span><span class="col-type">TEXT</span>
+          </div>
+          <div class="col-row"><span></span><span class="col-name">notes</span><span class="col-type">TEXT</span></div>
+          <div class="col-row"><span></span><span class="col-name">status</span><span class="col-type">TEXT</span></div>
+          <div class="col-row"><span></span><span class="col-name">captured_at</span><span
+              class="col-type">TIMESTAMPTZ</span></div>
+          <div class="col-row"><span></span><span class="col-name">updated_at</span><span
+              class="col-type">TIMESTAMPTZ</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>Sinofetch Ltd · Database Schema V1.0 · Prepared by Chamindu Vidyarathne (RM) · Confidential</footer>
+
+  <script>
+    const relations = [
+      {from: 't-organization', to: 't-persona', label: '1 : N', color: '#6d28d9'},
+      {from: 't-organization', to: 't-consumer', label: '1 : N', color: '#0f7a55'},
+      {from: 't-organization', to: 't-chat_session', label: '1 : N', color: '#b45309'},
+      {from: 't-organization', to: 't-qualified_lead', label: '1 : N', color: '#be185d'},
+      {from: 't-persona', to: 't-consumer', label: '1 : N', color: '#0f7a55'},
+      {from: 't-persona', to: 't-chat_session', label: '1 : N', color: '#b45309'},
+      {from: 't-consumer', to: 't-chat_session', label: '1 : N', color: '#b45309'},
+      {from: 't-consumer', to: 't-qualified_lead', label: '1 : N', color: '#be185d'},
+      {from: 't-chat_session', to: 't-message', label: '1 : N', color: '#0369a1'},
+      {from: 't-chat_session', to: 't-qualified_lead', label: '1 : 0-1', color: '#be185d'},
+    ];
+
+    function getCenter(el, wrap) {
+      const r = el.getBoundingClientRect();
+      const wr = wrap.getBoundingClientRect();
+      return {
+        x: r.left - wr.left + r.width / 2,
+        y: r.top - wr.top + r.height / 2,
+        top: {x: r.left - wr.left + r.width / 2, y: r.top - wr.top},
+        bottom: {x: r.left - wr.left + r.width / 2, y: r.bottom - wr.top},
+        left: {x: r.left - wr.left, y: r.top - wr.top + r.height / 2},
+        right: {x: r.right - wr.left, y: r.top - wr.top + r.height / 2},
+      };
+    }
+
+    function bestEdge(from, to) {
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      if (Math.abs(dx) > Math.abs(dy)) {
+        return dx > 0 ? [from.right, to.left] : [from.left, to.right];
+      } else {
+        return dy > 0 ? [from.bottom, to.top] : [from.top, to.bottom];
+      }
+    }
+
+    function drawLines() {
+      const wrap = document.getElementById('canvasWrap');
+      const svg = document.getElementById('erSvg');
+      const W = wrap.scrollWidth;
+      const H = wrap.scrollHeight;
+      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+      svg.setAttribute('width', W);
+      svg.setAttribute('height', H);
+      svg.innerHTML = '';
+
+      relations.forEach(({from, to, label, color}) => {
+        const fromEl = document.getElementById(from);
+        const toEl = document.getElementById(to);
+        if (!fromEl || !toEl) return;
+
+        const fc = getCenter(fromEl, wrap);
+        const tc = getCenter(toEl, wrap);
+        const [p1, p2] = bestEdge(fc, tc);
+
+        const mx = (p1.x + p2.x) / 2;
+        const my = (p1.y + p2.y) / 2;
+
+        const isHoriz = Math.abs(p2.x - p1.x) > Math.abs(p2.y - p1.y);
+        const dx = Math.abs(p2.x - p1.x) * 0.45;
+        const dy = Math.abs(p2.y - p1.y) * 0.45;
+
+        const d = isHoriz
+          ? `M${p1.x},${p1.y} C${p1.x + dx},${p1.y} ${p2.x - dx},${p2.y} ${p2.x},${p2.y}`
+          : `M${p1.x},${p1.y} C${p1.x},${p1.y + dy} ${p2.x},${p2.y - dy} ${p2.x},${p2.y}`;
+
+        // Shadow path for readability
+        const shadow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        shadow.setAttribute('d', d);
+        shadow.setAttribute('stroke', '#ffffff');
+        shadow.setAttribute('stroke-width', '4');
+        shadow.setAttribute('fill', 'none');
+        shadow.setAttribute('opacity', '0.7');
+        svg.appendChild(shadow);
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('stroke', color);
+        path.setAttribute('stroke-width', '1.8');
+        path.setAttribute('fill', 'none');
+        path.setAttribute('opacity', '0.75');
+        path.setAttribute('stroke-dasharray', '5 3');
+        svg.appendChild(path);
+
+        // Label background pill
+        const labelW = label.length * 6 + 12;
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', mx - labelW / 2);
+        rect.setAttribute('y', my - 10);
+        rect.setAttribute('width', labelW);
+        rect.setAttribute('height', 14);
+        rect.setAttribute('rx', '3');
+        rect.setAttribute('fill', '#ffffff');
+        rect.setAttribute('stroke', color);
+        rect.setAttribute('stroke-width', '1');
+        rect.setAttribute('opacity', '0.95');
+        svg.appendChild(rect);
+
+        const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        txt.setAttribute('x', mx);
+        txt.setAttribute('y', my);
+        txt.setAttribute('text-anchor', 'middle');
+        txt.setAttribute('dominant-baseline', 'middle');
+        txt.setAttribute('fill', color);
+        txt.setAttribute('font-size', '8.5');
+        txt.setAttribute('font-family', 'IBM Plex Mono, monospace');
+        txt.setAttribute('font-weight', '600');
+        txt.textContent = label;
+        svg.appendChild(txt);
+
+        // Endpoint dots
+        [p1, p2].forEach(pt => {
+          const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          c.setAttribute('cx', pt.x);
+          c.setAttribute('cy', pt.y);
+          c.setAttribute('r', '3.5');
+          c.setAttribute('fill', '#ffffff');
+          c.setAttribute('stroke', color);
+          c.setAttribute('stroke-width', '1.5');
+          svg.appendChild(c);
+        });
+      });
+    }
+
+    window.addEventListener('load', () => setTimeout(drawLines, 120));
+    window.addEventListener('resize', drawLines);
+  </script>
+</body>
+
+</html>

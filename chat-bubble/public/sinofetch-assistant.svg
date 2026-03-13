@@ -1,0 +1,19 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Sinofetch Assistant</title>
+  <g stroke="#2f335c" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="164" y="168" width="240" height="140" rx="18" fill="#a6b1e1"/>
+    <rect x="88" y="224" width="100" height="100" rx="18" fill="#6b72a8"/>
+    <rect x="112" y="248" width="40" height="34" rx="6" fill="#dcd6f7" stroke-width="6"/>
+    <rect x="196" y="196" width="184" height="12" rx="6" fill="#dcd6f7" stroke="none"/>
+    <rect x="196" y="224" width="184" height="12" rx="6" fill="#dcd6f7" stroke="none"/>
+    <rect x="196" y="252" width="184" height="12" rx="6" fill="#dcd6f7" stroke="none"/>
+    <rect x="196" y="280" width="150" height="12" rx="6" fill="#dcd6f7" stroke="none"/>
+    <rect x="140" y="320" width="270" height="22" rx="10" fill="#2f335c" stroke="none"/>
+    <circle cx="172" cy="356" r="26" fill="#2f335c" stroke="none"/>
+    <circle cx="172" cy="356" r="12" fill="#dcd6f7" stroke="none"/>
+    <circle cx="282" cy="356" r="26" fill="#2f335c" stroke="none"/>
+    <circle cx="282" cy="356" r="12" fill="#dcd6f7" stroke="none"/>
+    <circle cx="370" cy="356" r="26" fill="#2f335c" stroke="none"/>
+    <circle cx="370" cy="356" r="12" fill="#dcd6f7" stroke="none"/>
+  </g>
+</svg>

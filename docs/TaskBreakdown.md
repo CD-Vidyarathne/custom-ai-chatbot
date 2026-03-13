@@ -130,7 +130,6 @@ A simplified desktop chat application with embeddable chat bubble, admin dashboa
 - [ ] Set up global error handler
 - [ ] Create validation middleware (express-validator)
 - [ ] Add request logging
-- [ ] Implement rate limiting
 
 ### 3.10 Testing
 
@@ -248,9 +247,6 @@ A simplified desktop chat application with embeddable chat bubble, admin dashboa
   - Total leads
   - Recent activity
 - [ ] Fetch and display dashboard stats from API
-- [ ] Add charts/graphs (optional):
-  - Conversations over time
-  - Message volume
 - [ ] Add loading states
 - [ ] Implement error handling
 
@@ -301,8 +297,6 @@ A simplified desktop chat application with embeddable chat bubble, admin dashboa
 - [ ] Add loading states and skeletons
 - [ ] Implement error handling and notifications
 - [ ] Optimize for desktop window sizes
-- [ ] Add keyboard shortcuts
-- [ ] Implement dark/light theme (optional)
 
 ### 5.14 Testing
 
