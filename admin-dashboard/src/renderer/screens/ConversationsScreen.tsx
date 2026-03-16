@@ -34,6 +34,7 @@ export function ConversationsScreen() {
     const [conversationsError, setConversationsError] = useState<string | null>(
         null
     );
+    const [searchQuery, setSearchQuery] = useState('');
 
     const mapMessagesToUi = useCallback(
         (rows: ConversationMessage[]): Message[] =>
@@ -216,6 +217,17 @@ export function ConversationsScreen() {
         [conversations, activeChatId]
     );
 
+    const filteredConversations = useMemo(() => {
+        const q = searchQuery.trim().toLowerCase();
+        if (!q) return conversations;
+        return conversations.filter(
+            (c) =>
+                c.name.toLowerCase().includes(q) ||
+                c.id.toLowerCase().includes(q) ||
+                c.timestamp.toLowerCase().includes(q)
+        );
+    }, [conversations, searchQuery]);
+
     return (
         <div className="h-full">
             <div className="mb-6">
@@ -241,10 +253,11 @@ export function ConversationsScreen() {
                         </h1>
                         <input
                             type="text"
-                            placeholder="🔍 Search"
+                            placeholder="🔍 Search by name..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                             className="p-2 border rounded w-full text-sm mt-2"
                             style={{ borderColor: 'var(--color-border)' }}
-                            disabled
                         />
                     </div>
                     {loadingConversations ? (
@@ -258,13 +271,15 @@ export function ConversationsScreen() {
                                 onRetry={loadRecentConversations}
                             />
                         </div>
-                    ) : conversations.length === 0 ? (
+                    ) : filteredConversations.length === 0 ? (
                         <div className="p-4 text-sm text-(--color-text-muted)">
-                            No conversations found yet.
+                            {conversations.length === 0
+                                ? 'No conversations found yet.'
+                                : 'No matches for your search.'}
                         </div>
                     ) : (
                         <ChatList
-                            chats={conversations}
+                            chats={filteredConversations}
                             activeChatId={activeChatId || ''}
                             onSelectChat={handleSelectChat}
                         />
