@@ -37,6 +37,9 @@ function buildChatMessages(
 }
 
 
+const DEFAULT_SIMULATED_REPLY =
+  "Thanks for your message! This is a simulated reply from the assistant. AI integration is currently disabled.";
+
 export async function generateChatResponse(
   sessionId: string,
   personaId: string,
@@ -45,6 +48,12 @@ export async function generateChatResponse(
   const persona = await getPersonaById(personaId);
   if (!persona) {
     throw new Error('Persona not found');
+  }
+
+  const enableAi = process.env.ENABLE_AI?.toLowerCase() === 'true' || process.env.ENABLE_AI === '1';
+  if (!enableAi) {
+    const fallback = DEFAULT_SIMULATED_REPLY;
+    return { content: fallback, tokensUsed: null };
   }
 
   if (persona.ai_provider?.toLowerCase() !== 'openai') {

@@ -4,4 +4,7 @@ SUPABASE_URL =
 SUPABASE_PUBLISHABLE_KEY = 
 SUPABASE_SECRET_KEY = 
 
+# AI: set to true to enable OpenAI, false for simulated/default responses
+ENABLE_AI = false
+
 OPENAI_API_KEY = 
