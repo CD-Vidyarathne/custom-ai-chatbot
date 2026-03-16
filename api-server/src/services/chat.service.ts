@@ -224,7 +224,8 @@ export async function insertMessage(
   sessionId: string,
   source: 'user' | 'assistant' | 'system',
   content: string,
-  sequenceNo: number
+  sequenceNo: number,
+  tokensUsed?: number | null
 ): Promise<string> {
   const msgId = randomUUID();
   const { error } = await supabase.from('message').insert({
@@ -233,7 +234,7 @@ export async function insertMessage(
     sequence_no: sequenceNo,
     msg_source: source,
     content,
-    tokens_used: null,
+    tokens_used: tokensUsed ?? null,
     is_deleted: false,
   });
 
@@ -241,14 +242,15 @@ export async function insertMessage(
   return msgId;
 }
 
-/** Save user message and AI reply for a session (reply stored as source 'system' per database types). */
-export async function saveUserAndSystemMessages(
+/** Save user message and AI assistant reply for a session. */
+export async function saveUserAndAssistantMessages(
   sessionId: string,
   userContent: string,
-  systemReplyContent: string
+  assistantContent: string,
+  tokensUsed?: number | null
 ): Promise<void> {
   const userSeq = await getNextSequenceNo(sessionId);
-  const systemSeq = userSeq + 1;
+  const assistantSeq = userSeq + 1;
   await insertMessage(sessionId, 'user', userContent, userSeq);
-  await insertMessage(sessionId, 'system', systemReplyContent, systemSeq);
+  await insertMessage(sessionId, 'assistant', assistantContent, assistantSeq, tokensUsed);
 }

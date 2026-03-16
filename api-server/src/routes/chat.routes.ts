@@ -5,24 +5,23 @@ import {
   getConversationsByConsumer,
   getMessagesBySessionId,
   closeConversation,
-  saveUserAndSystemMessages,
+  saveUserAndAssistantMessages,
   getLastActivityAt,
 } from '../services/chat.service.js';
+import type { ConversationWithConsumer } from '../services/chat.service.js';
+import { generateChatResponse } from '../services/ai.service.js';
 
 const router = Router();
 
 /** Inactivity window after which a session is considered expired (minutes). */
 const INACTIVITY_MINUTES = 5;
 
-/** Simulated AI reply - replace with real AI integration later */
-const SIMULATED_AI_REPLY =
-  "Thanks for your message! This is a simulated reply from the assistant. Real AI integration will be added later.";
-
 /**
  * POST /api/chat/send
- * Send a message and receive a simulated AI response.
- * - New user (no conversation_id): pass persona_id, org_id (and optional consumer). Session is created, user message and system reply are saved.
- * - Existing session (conversation_id): if session inactive > 5 min it is closed and 410 returned; otherwise user + system reply are saved.
+ * Send a message and receive an AI response.
+ * - New user (no conversation_id): pass persona_id, org_id (and optional consumer). Session is created, user message and AI reply are saved.
+ * - Existing session (conversation_id): if session inactive > 5 min it is closed and 410 returned; otherwise user + AI reply are saved.
+ * Uses persona system_prompt for context injection, and model/temperature/max_tokens from persona config.
  */
 router.post('/send', async (req: Request, res: Response) => {
   const body = req.body as {
@@ -51,9 +50,10 @@ router.post('/send', async (req: Request, res: Response) => {
 
   try {
     let sessionId: string | null = body.conversation_id ?? null;
+    let session: ConversationWithConsumer | null = null;
 
     if (sessionId) {
-      const session = await getConversationById(sessionId);
+      session = await getConversationById(sessionId);
       if (!session) {
         res.status(404).json({ error: 'Conversation not found' });
         return;
@@ -90,12 +90,24 @@ router.post('/send', async (req: Request, res: Response) => {
         consumer: body.consumer,
       });
       sessionId = session_id;
+      session = await getConversationById(sessionId);
     }
 
-    await saveUserAndSystemMessages(sessionId, trimmed, SIMULATED_AI_REPLY);
+    if (!session) {
+      res.status(404).json({ error: 'Conversation not found' });
+      return;
+    }
+
+    const { content: reply, tokensUsed } = await generateChatResponse(
+      sessionId,
+      session.persona_id,
+      trimmed
+    );
+
+    await saveUserAndAssistantMessages(sessionId, trimmed, reply, tokensUsed);
 
     res.status(200).json({
-      reply: SIMULATED_AI_REPLY,
+      reply,
       conversation_id: sessionId,
     });
   } catch (err) {

@@ -19,6 +19,7 @@
 	"packageManager": "pnpm@10.18.3",
 	"dependencies": {
 		"@supabase/supabase-js": "^2.95.3",
+		"openai": "^4.73.0",
 		"cors": "^2.8.6",
 		"dotenv": "^17.2.4",
 		"express": "^5.2.1",
