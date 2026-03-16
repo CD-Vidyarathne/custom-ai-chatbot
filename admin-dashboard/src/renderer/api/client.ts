@@ -148,3 +148,73 @@ export async function updatePersona(
     body: JSON.stringify(body),
   });
 }
+
+// --- Conversations / Messages ---
+
+export interface ConversationSummary {
+  session_id: string;
+  consumer_id: string;
+  persona_id: string;
+  org_id: string;
+  status: 'active' | 'closed' | 'abandoned';
+  lead_captured: boolean;
+  started_at: string;
+  ended_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConversationMessage {
+  msg_id: string;
+  session_id: string;
+  sequence_no: number;
+  msg_source: 'user' | 'assistant' | 'system';
+  content: string;
+  tokens_used: number | null;
+  is_deleted: boolean;
+  created_at: string;
+}
+
+export async function getConsumerConversations(
+  consumerId: string
+): Promise<{ data: { conversations: ConversationSummary[] } } | { error: string; status: number }> {
+  return request<{ conversations: ConversationSummary[] }>('/api/chat/conversations', {
+    params: { consumer_id: consumerId },
+  });
+}
+
+export async function getConversationMessages(
+  sessionId: string
+): Promise<{ data: { messages: ConversationMessage[] } } | { error: string; status: number }> {
+  return request<{ messages: ConversationMessage[] }>(
+    `/api/chat/conversations/${encodeURIComponent(sessionId)}/messages`
+  );
+}
+
+export async function getConsumerMessages(
+  consumerId: string
+): Promise<{ data: { messages: ConversationMessage[] } } | { error: string; status: number }> {
+  const convResult = await getConsumerConversations(consumerId);
+  if ('error' in convResult) {
+    return convResult;
+  }
+
+  const allMessages: ConversationMessage[] = [];
+
+  for (const conversation of convResult.data.conversations) {
+    const msgResult = await getConversationMessages(conversation.session_id);
+    if ('error' in msgResult) {
+      return msgResult;
+    }
+    allMessages.push(...msgResult.data.messages);
+  }
+
+  allMessages.sort((a, b) => {
+    const at = new Date(a.created_at).getTime();
+    const bt = new Date(b.created_at).getTime();
+    if (Number.isNaN(at) || Number.isNaN(bt)) return 0;
+    return at - bt;
+  });
+
+  return { data: { messages: allMessages } };
+}

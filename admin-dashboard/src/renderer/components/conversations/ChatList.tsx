@@ -22,11 +22,6 @@ export const ChatList: React.FC<ChatListProps> = ({
                         onClick={() => onSelectChat(chat.id)}
                     >
                         <div className="flex items-center">
-                            <img
-                                src={chat.avatar}
-                                alt={chat.name}
-                                className="w-10 h-10 rounded-full mr-3"
-                            />
                             <div>
                                 <p
                                     className="font-bold text-sm"

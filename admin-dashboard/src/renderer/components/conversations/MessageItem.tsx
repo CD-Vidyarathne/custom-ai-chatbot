@@ -6,14 +6,14 @@ interface MessageItemProps {
 }
 
 export const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
-    const isUser = message.sender === "user";
+    const isAI = message.sender === "ai";
 
     return (
         <div
-            className={`mb-4 flex ${isUser ? "justify-end" : "justify-start"}`}
+            className={`mb-4 flex ${isAI ? "justify-end" : "justify-start"}`}
         >
             <div
-                className={`max-w-xs p-3 rounded-lg ${isUser ? "bg-blue-500 text-white" : "bg-gray-200 text-black"}`}
+                className={`max-w-xs p-3 rounded-lg ${isAI ? "bg-blue-500 text-white" : "bg-gray-200 text-black"}`}
             >
                 {message.content}
             </div>

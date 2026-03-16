@@ -144,10 +144,18 @@ export function LeadDetailScreen() {
                 <dd>
                   <button
                     type="button"
-                    onClick={() => navigate(`/conversations?session=${lead.session_id}`)}
+                    onClick={() =>
+                      navigate('/conversations', {
+                        state: {
+                          consumerId: lead.consumer_id,
+                          sessionId: lead.session_id,
+                          consumerName: lead.name ?? undefined,
+                        },
+                      })
+                    }
                     className="text-(--color-primary) hover:underline font-mono text-xs"
                   >
-                    {lead.session_id}
+                    {lead.name || 'View conversation'}
                   </button>
                 </dd>
               </div>
