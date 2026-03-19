@@ -26,7 +26,12 @@ export interface AdminStats {
   total_conversations: number;
   active_conversations: number;
   total_leads: number;
-  recent_activity: { session_id: string; updated_at: string; message_count: number }[];
+  recent_activity: {
+    session_id: string;
+    consumer_name: string;
+    updated_at: string;
+    message_count: number;
+  }[];
 }
 
 export interface AdminMonitoring {
@@ -60,12 +65,19 @@ export async function getConversationsWithFilters(
 
 /** Get dashboard statistics. */
 export async function getAdminStats(orgId?: string): Promise<AdminStats> {
-  let sessionsQuery = supabase.from('chat_session').select('session_id, status, updated_at');
+  let sessionsQuery = supabase
+    .from('chat_session')
+    .select('session_id, status, updated_at, consumer:consumer_id(name)');
   if (orgId) sessionsQuery = sessionsQuery.eq('org_id', orgId);
   const { data: sessions, error: sessionsError } = await sessionsQuery;
   if (sessionsError) throw new Error(`Failed to fetch stats: ${sessionsError.message}`);
 
-  const rows = (sessions ?? []) as { session_id: string; status: string; updated_at: string }[];
+  const rows = (sessions ?? []) as {
+    session_id: string;
+    status: string;
+    updated_at: string;
+    consumer: { name: string | null } | { name: string | null }[] | null;
+  }[];
   const total_conversations = rows.length;
   const active_conversations = rows.filter((r) => r.status === 'active').length;
 
@@ -81,7 +93,13 @@ export async function getAdminStats(orgId?: string): Promise<AdminStats> {
         .from('message')
         .select('*', { count: 'exact', head: true })
         .eq('session_id', r.session_id);
-      return { session_id: r.session_id, updated_at: r.updated_at, message_count: count ?? 0 };
+      const consumerRow = Array.isArray(r.consumer) ? r.consumer[0] : r.consumer;
+      return {
+        session_id: r.session_id,
+        consumer_name: consumerRow?.name ?? 'Unknown consumer',
+        updated_at: r.updated_at,
+        message_count: count ?? 0,
+      };
     })
   );
 
