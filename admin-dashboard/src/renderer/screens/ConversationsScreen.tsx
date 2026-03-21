@@ -9,9 +9,9 @@ import { LoadingSkeleton } from '../components/LoadingSkeleton';
 import {
     getConsumerMessages,
     getConversationMessages,
-    getLeads,
+    getAdminConversations,
     type ConversationMessage,
-    type Lead,
+    type ConversationSummary,
 } from '../api/client';
 
 export function ConversationsScreen() {
@@ -48,7 +48,7 @@ export function ConversationsScreen() {
     const loadRecentConversations = useCallback(async () => {
         setLoadingConversations(true);
         setConversationsError(null);
-        const result = await getLeads();
+        const result = await getAdminConversations();
         setLoadingConversations(false);
         if ('error' in result) {
             setConversations([]);
@@ -60,28 +60,19 @@ export function ConversationsScreen() {
             return;
         }
 
-        const leadsWithSessions = (result.data.leads as Lead[]).filter(
-            (lead) => lead.session_id
-        );
+        const convs = result.data.conversations;
 
-        const uniqueBySession = new Map<string, Lead>();
-        for (const lead of leadsWithSessions) {
-            if (lead.session_id && !uniqueBySession.has(lead.session_id)) {
-                uniqueBySession.set(lead.session_id, lead);
-            }
-        }
-
-        const list: Conversation[] = Array.from(uniqueBySession.values()).map(
-            (lead) => ({
-                id: lead.session_id as string,
-                name:
-                    (lead.name && lead.name.trim().length > 0 ? lead.name : lead.email) ||
-                    `Consumer ${lead.consumer_id.slice(0, 8)}`,
+        const list: Conversation[] = convs.map(
+            (conv) => ({
+                id: conv.session_id,
+                name: `Session ${conv.session_id.slice(0, 8)}`,
                 avatar: 'https://via.placeholder.com/40',
-                status: 'Active AI',
-                timestamp: lead.captured_at
-                    ? new Date(lead.captured_at).toLocaleString()
-                    : new Date(lead.updated_at).toLocaleString(),
+                status: conv.last_message 
+                    ? conv.last_message.substring(0, 40) + (conv.last_message.length > 40 ? '...' : '') 
+                    : (conv.status === 'active' ? 'Active AI' : 'Closed'),
+                timestamp: conv.last_activity_at
+                    ? new Date(conv.last_activity_at).toLocaleString()
+                    : new Date(conv.updated_at).toLocaleString(),
             })
         );
 

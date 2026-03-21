@@ -1,44 +1,56 @@
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { getPersonaById } from './persona.service.js';
 import { getMessagesBySessionId } from './chat.service.js';
 import type { MessageRow } from './chat.service.js';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 export interface GenerateChatResponseResult {
   content: string;
   tokensUsed: number | null;
 }
 
-
-function buildChatMessages(
-  systemPrompt: string,
-  history: MessageRow[],
-  userMessage: string
-): OpenAI.Chat.ChatCompletionMessageParam[] {
-  const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-    { role: 'system', content: systemPrompt },
-  ];
-
-
-  for (const msg of history) {
-    if (msg.msg_source === 'user') {
-      messages.push({ role: 'user', content: msg.content });
-    } else if (msg.msg_source === 'assistant') {
-      messages.push({ role: 'assistant', content: msg.content });
-    }
-  }
-
-  messages.push({ role: 'user', content: userMessage });
-
-  return messages;
-}
-
-
 const DEFAULT_SIMULATED_REPLY =
   "Thanks for your message! This is a simulated reply from the assistant. AI integration is currently disabled.";
+
+async function getGeminiResponse(
+  systemPrompt: string,
+  history: MessageRow[],
+  userMessage: string,
+  modelName: string,
+  temperature: number,
+  maxTokens: number
+): Promise<GenerateChatResponseResult> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY is missing');
+  }
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({
+    model: modelName || 'gemini-1.5-flash',
+    systemInstruction: systemPrompt,
+    generationConfig: {
+      temperature: Math.min(1, Math.max(0, temperature ?? 0.7)),
+      maxOutputTokens: maxTokens ?? 1024,
+    }
+  });
+
+  const chatHistory = history.map(msg => ({
+    role: msg.msg_source === 'user' ? 'user' : 'model',
+    parts: [{ text: msg.content }]
+  }));
+
+  const chat = model.startChat({
+    history: chatHistory,
+  });
+
+  const result = await chat.sendMessage(userMessage);
+  const response = result.response;
+  
+  return {
+    content: response.text(),
+    tokensUsed: response.usageMetadata?.totalTokenCount ?? null
+  };
+}
 
 export async function generateChatResponse(
   sessionId: string,
@@ -56,51 +68,18 @@ export async function generateChatResponse(
     return { content: fallback, tokensUsed: null };
   }
 
-  if (persona.ai_provider?.toLowerCase() !== 'openai') {
-    const fallback =
-      persona.fallback_message ??
-      "I'm sorry, this persona is not configured for OpenAI. Please contact support.";
-    return { content: fallback, tokensUsed: null };
-  }
-
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey?.trim()) {
-    const fallback =
-      persona.fallback_message ??
-      "I'm sorry, the AI service is not configured. Please try again later.";
-    return { content: fallback, tokensUsed: null };
-  }
-
   try {
     const history = await getMessagesBySessionId(sessionId);
-    const messages = buildChatMessages(persona.system_prompt, history, userMessage);
-
-    const completion = await openai.chat.completions.create({
-      model: persona.model_name || 'gpt-4o',
-      messages,
-      temperature: Math.min(1, Math.max(0, persona.temperature ?? 0.7)),
-      max_tokens: persona.max_tokens ?? 1024,
-    });
-
-    const content = completion.choices[0]?.message?.content?.trim() ?? '';
-    const tokensUsed =
-      completion.usage?.total_tokens != null ? completion.usage.total_tokens : null;
-
-    if (!content && persona.fallback_message) {
-      return { content: persona.fallback_message, tokensUsed };
-    }
-
-    return {
-      content: content || persona.fallback_message || "I'm sorry, I couldn't generate a response.",
-      tokensUsed,
-    };
+    return await getGeminiResponse(
+      persona.system_prompt,
+      history,
+      userMessage,
+      persona.model_name || 'gemini-1.5-flash',
+      persona.temperature ?? 0.7,
+      persona.max_tokens ?? 1024
+    );
   } catch (err) {
-    console.error('OpenAI API error:', err);
-
-    const fallback =
-      persona.fallback_message ??
-      "I'm sorry, I encountered an error processing your request. Please try again.";
-
-    return { content: fallback, tokensUsed: null };
+    console.error('Gemini API error:', err);
+    return { content: "Assistant is temporarily unavailable", tokensUsed: null };
   }
 }

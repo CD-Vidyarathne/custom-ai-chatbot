@@ -184,6 +184,19 @@ export interface ConversationSummary {
     ended_at: string | null;
     created_at: string;
     updated_at: string;
+    last_message?: string | null;
+    last_activity_at?: string;
+}
+
+export async function getAdminConversations(
+    orgId?: string
+): Promise<
+    | { data: { conversations: ConversationSummary[] } }
+    | { error: string; status: number }
+> {
+    return request<{ conversations: ConversationSummary[] }>('/api/admin/conversations', {
+        params: orgId ? { org_id: orgId } : undefined,
+    });
 }
 
 export interface ConversationMessage {

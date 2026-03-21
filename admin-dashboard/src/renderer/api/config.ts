@@ -4,7 +4,7 @@
  */
 const getBaseUrl = (): string => {
   if (typeof window !== 'undefined' && (window as { __API_BASE_URL__?: string }).__API_BASE_URL__) {
-    return (window as { __API_BASE_URL__: string }).__API_BASE_URL__;
+    return (window as unknown as { __API_BASE_URL__: string }).__API_BASE_URL__;
   }
   return (process.env as { VITE_API_URL?: string }).VITE_API_URL ?? 'http://localhost:8080';
 };

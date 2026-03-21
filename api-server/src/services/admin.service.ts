@@ -12,6 +12,8 @@ export interface ConversationRow {
   ended_at: string | null;
   created_at: string;
   updated_at: string;
+  last_message?: string | null;
+  last_activity_at?: string;
 }
 
 export interface AdminConversationFilters {
@@ -60,7 +62,27 @@ export async function getConversationsWithFilters(
 
   const { data, error } = await query;
   if (error) throw new Error(`Failed to fetch conversations: ${error.message}`);
-  return (data ?? []) as ConversationRow[];
+  
+  const rows = (data ?? []) as ConversationRow[];
+  const enhancedRows = await Promise.all(
+    rows.map(async (row) => {
+      const { data: lastMessage } = await supabase
+        .from('message')
+        .select('content, created_at')
+        .eq('session_id', row.session_id)
+        .order('sequence_no', { ascending: false })
+        .limit(1)
+        .single();
+      
+      return {
+        ...row,
+        last_message: lastMessage?.content ?? null,
+        last_activity_at: lastMessage?.created_at ?? row.updated_at,
+      };
+    })
+  );
+
+  return enhancedRows;
 }
 
 /** Get dashboard statistics. */
